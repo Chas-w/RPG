@@ -4,6 +4,12 @@
 [ext_resource type="Script" uid="uid://ebp0yhwb4du5" path="res://Scripts/player_controller.gd" id="1_t5o4e"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
+[ext_resource type="Shader" uid="uid://b1vjgpmguv0vy" path="res://Shaders/pixelate.gdshader" id="4_t5o4e"]
+
+[sub_resource type="Resource" id="Resource_rlble"]
+script = ExtResource("2_t5o4e")
+duration = 0.5
+transition = 1
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_cwweq"]
 
@@ -23,18 +29,21 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
 
-[sub_resource type="Resource" id="Resource_rlble"]
-script = ExtResource("2_t5o4e")
-duration = 0.5
-transition = 1
-
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_t5o4e"]
+shader = ExtResource("4_t5o4e")
+shader_parameter/pixelation = 0.0030000001425
+shader_parameter/opacity = 1.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_4bjip"]
+viewport_path = NodePath("UI/SubViewportContainer/SubViewport")
 
 [node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
-cam = NodePath("Camera")
+cam = NodePath("UI/SubViewportContainer/SubViewport/Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
 center_point = NodePath("Player Body/Center Point")
@@ -43,6 +52,24 @@ cam_follow_weight = 8.0
 cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
 gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
+
+[node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
+transform = Transform3D(1, 0, 0, 0, 0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, -1.5, -0.5, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Cam Origin" unique_id=703369229]
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0)
+spring_length = 4.0
+margin = 1.0
+
+[node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248]
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04, 0, 2.091)
+script = ExtResource("1_pvk8e")
+priority = 10
+tween_resource = SubResource("Resource_rlble")
+follow_damping = true
+follow_distance = 3.0
+spring_length = 3.0
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="Body" type="MeshInstance3D" parent="." unique_id=1086601029]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
@@ -87,37 +114,44 @@ target_position = Vector3(0, -10, 0)
 collision_mask = 2
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
-transform = Transform3D(1, 0, 0, 0, 0.9641049, 0.2655225, 0, -0.2655225, 0.9641049, 1.2933636, 1.8192706, 0)
+transform = Transform3D(1, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000002, 0, 0.9685745, 0)
 
-[node name="Camera" type="Camera3D" parent="." unique_id=959619856]
+[node name="UI" type="CanvasLayer" parent="." unique_id=1691378230]
+
+[node name="Control" type="Control" parent="UI" unique_id=979566131]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="UI" unique_id=1295617872]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="UI/SubViewportContainer" unique_id=49592246]
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Camera" type="Camera3D" parent="UI/SubViewportContainer/SubViewport" unique_id=959619856]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.96410465, 0.2655225, 0, -0.2655225, 0.96410465, 0.04020282, -0.5858236, 2.767685)
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
 top_level = true
-h_offset = 1.25
+h_offset = 1.5
 
-[node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]
+[node name="PhantomCameraHost" type="Node" parent="UI/SubViewportContainer/SubViewport/Camera" unique_id=1412045122]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("4_f4b76")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
-[node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
-transform = Transform3D(1, 0, 0, 0, 0.99440265, 0.10565664, 0, -0.10565664, 0.99440265, 0, 1.1003959, 0.011424304)
-
-[node name="SpringArm3D" type="SpringArm3D" parent="Cam Origin" unique_id=703369229]
-transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, -0.45488617, 0.47156587)
-shape = SubResource("SphereShape3D_blnjl")
-spring_length = 3.0
-margin = 0.5
-
-[node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248 node_paths=PackedStringArray("follow_target", "look_at_target")]
-transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04020282, -1.5131121, 2.0911067)
-script = ExtResource("1_pvk8e")
-priority = 10
-follow_target = NodePath("../../../Player Body")
-look_at_target = NodePath("../..")
-tween_resource = SubResource("Resource_rlble")
-follow_damping = true
-follow_distance = 3.0
-spring_length = 3.0
-metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+[node name="Pixelate" type="TextureRect" parent="UI/SubViewportContainer" unique_id=1889686691]
+material = SubResource("ShaderMaterial_t5o4e")
+layout_mode = 2
+texture = SubResource("ViewportTexture_4bjip")

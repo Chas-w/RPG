@@ -81,7 +81,7 @@ func _physics_process(delta):
 			_handle_movement(delta)
 			pass
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		cam_origin.rotation.x -= event.relative.y * SENSITIVITY
 		# Prevent the camera from rotating too far up or down.
