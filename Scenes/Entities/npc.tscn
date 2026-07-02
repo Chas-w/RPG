@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://brxh4j66crg80"]
 
+[ext_resource type="Script" uid="uid://hgno4oal6v58" path="res://Scripts/npc.gd" id="1_nu8im"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_reiig"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_nu8im"]
@@ -8,6 +10,12 @@
 albedo_color = Color(1, 0, 0, 1)
 
 [node name="NPC" type="Node3D" unique_id=440338480]
+script = ExtResource("1_nu8im")
+status = {
+"Diseased": 0.0,
+"Hunger": 0.0,
+"Thirst": 0.0
+}
 
 [node name="RigidBody3D" type="RigidBody3D" parent="." unique_id=1327075283]
 collision_layer = 2

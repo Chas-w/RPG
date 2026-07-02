@@ -5,8 +5,6 @@
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
-
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_cwweq"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_mepjo"]
@@ -21,7 +19,7 @@ noise = SubResource("FastNoiseLite_mepjo")
 albedo_color = Color(0.9960334, 0, 0.6155507, 1)
 albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
-[sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
 
@@ -30,7 +28,9 @@ script = ExtResource("2_t5o4e")
 duration = 0.25
 transition = 5
 
-[sub_resource type="SphereMesh" id="SphereMesh_cwweq"]
+[sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pvk8e"]
 
 [node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
 script = ExtResource("1_t5o4e")
@@ -38,15 +38,21 @@ player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
-zoom_cam = NodePath("Cam Origin/SpringArm3D2/Close Cam")
-center_point = NodePath("Camera/Center Point")
-follow_buffer = Vector4(0.5, 0.5, 0.25, 0.5)
-cam_follow_weight = 1.5
+zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
+center_point = NodePath("Player Body/Center Point")
+follow_buffer = Vector4(0.1, 1, 5, 0.5)
+cam_follow_weight = 8.0
 cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
-gun = NodePath("Player Body/UpperBody/Gun")
+gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
+
+[node name="Body" type="MeshInstance3D" parent="." unique_id=1086601029]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
+mesh = SubResource("CapsuleMesh_cwweq")
+surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 
 [node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
 can_sleep = false
 lock_rotation = true
 
@@ -58,18 +64,42 @@ transform = Transform3D(1.5119047, 0, 0, 0, 0.5338587, 0, 0, 0, 1.2821106, 0, 0.
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 
-[node name="Gun" type="MeshInstance3D" parent="Player Body/UpperBody" unique_id=1271846376]
-transform = Transform3D(0.1984252, 0, 0, 0, 0.4495571, 0, 0, 0, 1.1699458, -0.5952756, -0.012708843, -0.46153092)
+[node name="Zoomed Origin" type="Node3D" parent="Player Body/UpperBody" unique_id=801008605]
+transform = Transform3D(0.6614173, 0, 0, 0, 1.8177532, 0, 0, 0, 0.9015685, 0.2937662, 1.2167814, 0.51802826)
+
+[node name="SpringArm3D2" type="SpringArm3D" parent="Player Body/UpperBody/Zoomed Origin" unique_id=147311797]
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, -0.059068955, -0.5767886, -0.03615898)
+shape = SubResource("SphereShape3D_blnjl")
+margin = 0.5
+
+[node name="Close Cam" type="Node3D" parent="Player Body/UpperBody/Zoomed Origin/SpringArm3D2" unique_id=1769517213]
+transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
+script = ExtResource("1_pvk8e")
+tween_resource = SubResource("Resource_rlble")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Gun" type="MeshInstance3D" parent="Player Body/UpperBody/Zoomed Origin" unique_id=1271846376]
+transform = Transform3D(0.30000004, 0, 0, 0, 0.23138511, -0.39828357, 0, 0.06372538, 1.446157, 0.49226657, -0.49506292, -1.0506661)
 visible = false
 mesh = SubResource("BoxMesh_mepjo")
 
-[node name="Zoomed Origin" type="Node3D" parent="Player Body/UpperBody" unique_id=801008605]
-transform = Transform3D(0.6614173, 0, 0, 0, 1.8059173, 0.4973646, 0, -0.20709793, 0.7519669, 0, 1.3507929, 0)
+[node name="RayCast3D" type="RayCast3D" parent="Player Body/UpperBody/Zoomed Origin/Gun" unique_id=669128208]
+transform = Transform3D(3.277267, 0, 0, 0, -6.2952076e-08, -4.012739, 0, 1.4401757, -1.754024e-07, 0, 0, 0)
+target_position = Vector3(0, -10, 0)
+collision_mask = 2
+
+[node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
+transform = Transform3D(1, 0, 0, 0, 0.9641049, 0.2655225, 0, -0.2655225, 0.9641049, 1.2933636, 1.8192706, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player Body/Center Point" unique_id=1963340427]
+transform = Transform3D(0.30778378, 0, 0, 0, 0.13589515, 0, 0, 0, 0.30643705, 0, 0, 0)
+mesh = SubResource("BoxMesh_pvk8e")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=959619856]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.9446518, 0.3280754, 0, -0.3280754, 0.9446518, -0.21433064, 1.3361764, 1.8202171)
+transform = Transform3D(1, 0, 0, 0, 0.96410465, 0.2655225, 0, -0.2655225, 0.96410465, 0.04020282, -0.5858236, 2.767685)
 top_level = true
+h_offset = 1.25
 
 [node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]
 process_priority = 300
@@ -77,48 +107,23 @@ process_physics_priority = 300
 script = ExtResource("4_f4b76")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
-[node name="Center Point" type="Marker3D" parent="Camera" unique_id=1897500884]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2281241)
-
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
-transform = Transform3D(1, 0, 0, 0, 0.9641047, 0.26552245, 0, -0.26552245, 0.9641047, 0, 1.2079173, 0)
+transform = Transform3D(1, 0, 0, 0, 0.99440265, 0.10565664, 0, -0.10565664, 0.99440265, 0, 1.1003959, 0.011424304)
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Cam Origin" unique_id=703369229]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.04020282, -0.44801423, 0.48047787)
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, -0.45488617, 0.47156587)
 shape = SubResource("SphereShape3D_blnjl")
 spring_length = 3.0
 margin = 0.5
 
-[node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248]
-transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
+[node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248 node_paths=PackedStringArray("follow_target", "look_at_target")]
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04020282, -1.5131121, 2.0911067)
 script = ExtResource("1_pvk8e")
 priority = 10
+follow_target = NodePath("../../../Player Body")
+look_at_target = NodePath("../..")
 tween_resource = SubResource("Resource_rlble")
+follow_damping = true
+follow_distance = 3.0
+spring_length = 3.0
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
-
-[node name="aim" type="Marker3D" parent="Cam Origin/SpringArm3D/Default Cam" unique_id=1825290542]
-transform = Transform3D(0.8332785, 0.04822282, -0.5507465, -0.14308904, 0.981056, -0.13059317, 0.53401554, 0.18762623, 0.824393, -0.66106844, -2.9802322e-08, -2.3706212)
-
-[node name="RayCast3D" type="RayCast3D" parent="Cam Origin/SpringArm3D/Default Cam/aim" unique_id=669128208]
-transform = Transform3D(0.9219107, 0.38679346, -0.021710258, 0.008114657, -0.0753086, -0.99712723, -0.38731727, 0.91908616, -0.07256652, 0, 0, 0)
-target_position = Vector3(0, -5, 0)
-collision_mask = 2
-
-[node name="aim" type="MeshInstance3D" parent="Cam Origin/SpringArm3D/Default Cam/aim/RayCast3D" unique_id=853194357]
-transform = Transform3D(0.09, 0, 0, 0, 0.09, 0, 0, 0, 0.09, 6.437302e-08, -4.6565275, 0)
-mesh = SubResource("SphereMesh_cwweq")
-
-[node name="SpringArm3D2" type="SpringArm3D" parent="Cam Origin" unique_id=147311797]
-transform = Transform3D(0.9286866, -1.4901161e-08, -0.37086546, -0.11551445, 0.95025504, -0.28926045, 0.35241678, 0.31147268, 0.88248926, -1.2189602, -0.5122129, 0.39445883)
-shape = SubResource("SphereShape3D_blnjl")
-margin = 0.5
-
-[node name="Close Cam" type="Node3D" parent="Cam Origin/SpringArm3D2" unique_id=1769517213]
-transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
-script = ExtResource("1_pvk8e")
-tween_resource = SubResource("Resource_rlble")
-metadata/_custom_type_script = "uid://csjccrhj5wnx7"
-
-[node name="Body" type="MeshInstance3D" parent="." unique_id=1086601029]
-mesh = SubResource("CapsuleMesh_cwweq")
-surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")

@@ -41,6 +41,7 @@ enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, Null}
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	speed = WALK_SPEED
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
 	status_dictionary = database._JSON_to_dictionary(database.player_status_path)
@@ -101,7 +102,7 @@ func _handle_movement(delta):
 	else:
 		player_body.linear_velocity.x = lerp(player_body.linear_velocity.x, direction.x * speed, delta * 7.0)
 		player_body.linear_velocity.z = lerp(player_body.linear_velocity.z, direction.z * speed, delta * 7.0)
-	
+	player_body.position.normalized()
 	#exit move
 	if(player_body.linear_velocity.x <= 0 && player_body.linear_velocity.y <= 0):
 		_set_move_state(Move_State.Idle)
@@ -125,19 +126,16 @@ func _handle_zoom(delta):
 			zoomed = false
 
 func _handle_follow_cam(delta): #needs some tweaking later, maybe figure out some ease?
-	#x
-	if (absf(player_body.global_position.x - center_point.global_position.x) > follow_buffer.x):
-		cam_origin.global_position.x = lerpf(cam_origin.global_position.x, player_body.global_position.x, cam_follow_weight * delta)
-	#y
-	if (absf(player_body.position.y - center_point.position.y) > follow_buffer.y && absf(player_body.position.y - center_point.position.y) < follow_buffer.y * 10):
-		cam_origin.global_position.y = lerpf(cam_origin.global_position.y, player_body.global_position.y, cam_follow_weight * delta)
-	if(absf(player_body.position.y - center_point.position.y) > follow_buffer.y * 10):
-		cam_origin.global_position.y = lerpf(cam_origin.global_position.y, player_body.global_position.y, cam_follow_weight * 10 * delta)
-	#z
-	if ((player_body.position.z - center_point.position.z) > follow_buffer.z):
-		cam_origin.global_position.z = lerpf(cam_origin.global_position.z, player_body.global_position.z, cam_follow_weight * 3 * delta)
-	if((player_body.position.z - center_point.position.z) < follow_buffer.w):
-		cam_origin.global_position.z = lerpf(cam_origin.global_position.z, player_body.global_position.z, cam_follow_weight * 3 * delta)
+	##zoom cam
+	zoomed_origin.global_rotation = cam_origin.global_rotation
+	##x
+	if (absf(player_body.global_position.x - cam_origin.global_position.x) > follow_buffer.x):
+		cam_origin.global_position.x = lerpf(cam_origin.global_position.x, player_body.global_position.x, cam_follow_weight/2 * delta)
+	##y
+	cam_origin.global_position.y = lerpf(cam_origin.global_position.y, center_point.global_position.y, cam_follow_weight * delta)
+	##z
+	cam_origin.global_position.z = lerpf(cam_origin.global_position.z, center_point.global_position.z, cam_follow_weight * delta)
+	cam_origin.position.normalized()
 
 func _set_move_state(next_move_state:int):
 	var prev_move_state := move_state
