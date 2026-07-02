@@ -25,12 +25,10 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
 [sub_resource type="Resource" id="Resource_rlble"]
 script = ExtResource("2_t5o4e")
-duration = 0.25
-transition = 5
+duration = 0.5
+transition = 1
 
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_pvk8e"]
 
 [node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
 script = ExtResource("1_t5o4e")
@@ -90,10 +88,6 @@ collision_mask = 2
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
 transform = Transform3D(1, 0, 0, 0, 0.9641049, 0.2655225, 0, -0.2655225, 0.9641049, 1.2933636, 1.8192706, 0)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player Body/Center Point" unique_id=1963340427]
-transform = Transform3D(0.30778378, 0, 0, 0, 0.13589515, 0, 0, 0, 0.30643705, 0, 0, 0)
-mesh = SubResource("BoxMesh_pvk8e")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=959619856]
 physics_interpolation_mode = 1
