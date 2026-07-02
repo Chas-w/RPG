@@ -1,20 +1,11 @@
-[gd_scene format=3 uid="uid://bko1vqovjcgo8"]
+[gd_scene format=3 uid="uid://cs5uw5ng78niv"]
 
-[ext_resource type="Script" uid="uid://di0l04njfdyel" path="res://Scripts/player.gd" id="1_dysn3"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_mepjo"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_ssgyw"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_ek5ux"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_pvk8e"]
+[ext_resource type="Script" uid="uid://ebp0yhwb4du5" path="res://Scripts/player_controller.gd" id="1_t5o4e"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
-
-[sub_resource type="Resource" id="Resource_rlble"]
-script = ExtResource("3_ssgyw")
-duration = 0.25
-transition = 5
-
-[sub_resource type="SphereMesh" id="SphereMesh_cwweq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_cwweq"]
 
@@ -30,19 +21,52 @@ noise = SubResource("FastNoiseLite_mepjo")
 albedo_color = Color(0.9960334, 0, 0.6155507, 1)
 albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
+
+[sub_resource type="Resource" id="Resource_rlble"]
+script = ExtResource("2_t5o4e")
+duration = 0.25
+transition = 5
+
+[sub_resource type="SphereMesh" id="SphereMesh_cwweq"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
 
-[node name="Player Body" type="CharacterBody3D" unique_id=1805124832 node_paths=PackedStringArray("gun", "default_cam", "zoom_cam", "cam_origin", "cam")]
-slide_on_ceiling = false
-script = ExtResource("1_dysn3")
-gun = NodePath("Gun")
+[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "default_cam", "zoom_cam", "cam_origin", "cam", "gun")]
+script = ExtResource("1_t5o4e")
+player_body = NodePath("Player Body")
+lower_body_visual = NodePath("Body")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Cam Origin/SpringArm3D2/Close Cam")
 cam_origin = NodePath("Cam Origin")
-cam = NodePath("Camera3D")
+cam = NodePath("Camera")
+gun = NodePath("Gun")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=252550095]
+[node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661]
+can_sleep = false
+lock_rotation = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player Body" unique_id=252550095]
 shape = SubResource("CapsuleShape3D_8j60k")
+
+[node name="UpperBody" type="MeshInstance3D" parent="Player Body" unique_id=1859962029]
+transform = Transform3D(1.5119047, 0, 0, 0, 0.5338587, 0, 0, 0, 1.2821106, 0, 0.4867847, 0)
+mesh = SubResource("CapsuleMesh_cwweq")
+surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=959619856]
+physics_interpolation_mode = 1
+transform = Transform3D(1, 0, 0, 0, 0.9446518, 0.3280754, 0, -0.3280754, 0.9446518, -0.21433064, 1.3361764, 1.8202171)
+top_level = true
+
+[node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("4_f4b76")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"
+
+[node name="Center Point" type="Marker3D" parent="Camera" unique_id=1897500884]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2281241)
 
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
 transform = Transform3D(1, 0, 0, 0, 0.9641047, 0.26552245, 0, -0.26552245, 0.9641047, 0, 1.2079173, 0)
@@ -55,7 +79,7 @@ margin = 0.5
 
 [node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248]
 transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
-script = ExtResource("2_mepjo")
+script = ExtResource("1_pvk8e")
 priority = 10
 tween_resource = SubResource("Resource_rlble")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
@@ -79,24 +103,13 @@ margin = 0.5
 
 [node name="Close Cam" type="Node3D" parent="Cam Origin/SpringArm3D2" unique_id=1769517213]
 transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
-script = ExtResource("2_mepjo")
+script = ExtResource("1_pvk8e")
 tween_resource = SubResource("Resource_rlble")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [node name="Body" type="MeshInstance3D" parent="." unique_id=1086601029]
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=959619856]
-physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.9446518, 0.3280754, 0, -0.3280754, 0.9446518, -0.21433064, 1.3361764, 1.8202171)
-top_level = true
-
-[node name="PhantomCameraHost" type="Node" parent="Camera3D" unique_id=1412045122]
-process_priority = 300
-process_physics_priority = 300
-script = ExtResource("4_ek5ux")
-metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="Gun" type="MeshInstance3D" parent="." unique_id=1271846376]
 transform = Transform3D(0.3, 0, 0, 0, 0.24, 0, 0, 0, 1.5, -0.90000004, 0.48, -0.5917337)
