@@ -15,11 +15,14 @@ const ZOOM_FOV = 50
 const SPRINT_FOV = 100
 
 @export_category("Camera")
+@export var cam : Camera3D
 @export var default_cam : PhantomCamera3D
 @export var zoom_cam : PhantomCamera3D
-@export var cam_origin : Node3D
-@export var cam : Camera3D
+@export var center_point : Marker3D
+@export var follow_buffer: Vector4
 @export var cam_follow_weight : float
+@export var cam_origin : Node3D
+@export var zoomed_origin : Node3D
 var zoomed : bool
 
 @export_category("Player Data Info")
@@ -48,19 +51,30 @@ func _ready():
 func _process(delta):
 	input_dir = Input.get_vector("left", "right", "up", "down")
 	direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	
+	#gun and zoom
 	if (Input.is_action_just_pressed("gun")):
 		inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
 		gun.visible = !gun.visible
 	_handle_zoom(delta)
-			
+	
+	#camera
+	_handle_follow_cam(delta)
+	
+	#set up moving
 	if(direction && move_state != Move_State.Moving):
 		_set_move_state(Move_State.Moving)
 
 func _physics_process(delta):
+	#rotation
 	player_body.rotation.y = cam_origin.rotation.y
-	# Add the gravity.
-		
+	# jump
+	if(Input.is_action_just_pressed("jump") && player_body.linear_velocity.y <= 0):
+		player_body.linear_velocity.y += JUMP_VELOCITY * 45 * delta
+	#visual 
 	lower_body_visual.global_position = player_body.global_position #only when the rotation has reached a certain edge
+	
+	#movement state machine
 	match(move_state):
 		Move_State.Moving:
 			_handle_movement(delta)
@@ -109,6 +123,21 @@ func _handle_zoom(delta):
 		cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
 		if(zoomed):
 			zoomed = false
+
+func _handle_follow_cam(delta): #needs some tweaking later, maybe figure out some ease?
+	#x
+	if (absf(player_body.global_position.x - center_point.global_position.x) > follow_buffer.x):
+		cam_origin.global_position.x = lerpf(cam_origin.global_position.x, player_body.global_position.x, cam_follow_weight * delta)
+	#y
+	if (absf(player_body.position.y - center_point.position.y) > follow_buffer.y && absf(player_body.position.y - center_point.position.y) < follow_buffer.y * 10):
+		cam_origin.global_position.y = lerpf(cam_origin.global_position.y, player_body.global_position.y, cam_follow_weight * delta)
+	if(absf(player_body.position.y - center_point.position.y) > follow_buffer.y * 10):
+		cam_origin.global_position.y = lerpf(cam_origin.global_position.y, player_body.global_position.y, cam_follow_weight * 10 * delta)
+	#z
+	if ((player_body.position.z - center_point.position.z) > follow_buffer.z):
+		cam_origin.global_position.z = lerpf(cam_origin.global_position.z, player_body.global_position.z, cam_follow_weight * 3 * delta)
+	if((player_body.position.z - center_point.position.z) < follow_buffer.w):
+		cam_origin.global_position.z = lerpf(cam_origin.global_position.z, player_body.global_position.z, cam_follow_weight * 3 * delta)
 
 func _set_move_state(next_move_state:int):
 	var prev_move_state := move_state

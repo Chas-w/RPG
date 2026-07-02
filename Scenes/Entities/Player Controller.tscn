@@ -21,6 +21,8 @@ noise = SubResource("FastNoiseLite_mepjo")
 albedo_color = Color(0.9960334, 0, 0.6155507, 1)
 albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
+[sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
 
 [sub_resource type="Resource" id="Resource_rlble"]
@@ -30,17 +32,19 @@ transition = 5
 
 [sub_resource type="SphereMesh" id="SphereMesh_cwweq"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
-
-[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "default_cam", "zoom_cam", "cam_origin", "cam", "gun")]
+[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
+cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Cam Origin/SpringArm3D2/Close Cam")
+center_point = NodePath("Camera/Center Point")
+follow_buffer = Vector4(0.5, 0.5, 0.25, 0.5)
+cam_follow_weight = 1.5
 cam_origin = NodePath("Cam Origin")
-cam = NodePath("Camera")
-gun = NodePath("Gun")
+zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
+gun = NodePath("Player Body/UpperBody/Gun")
 
 [node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661]
 can_sleep = false
@@ -53,6 +57,14 @@ shape = SubResource("CapsuleShape3D_8j60k")
 transform = Transform3D(1.5119047, 0, 0, 0, 0.5338587, 0, 0, 0, 1.2821106, 0, 0.4867847, 0)
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
+
+[node name="Gun" type="MeshInstance3D" parent="Player Body/UpperBody" unique_id=1271846376]
+transform = Transform3D(0.1984252, 0, 0, 0, 0.4495571, 0, 0, 0, 1.1699458, -0.5952756, -0.012708843, -0.46153092)
+visible = false
+mesh = SubResource("BoxMesh_mepjo")
+
+[node name="Zoomed Origin" type="Node3D" parent="Player Body/UpperBody" unique_id=801008605]
+transform = Transform3D(0.6614173, 0, 0, 0, 1.8059173, 0.4973646, 0, -0.20709793, 0.7519669, 0, 1.3507929, 0)
 
 [node name="Camera" type="Camera3D" parent="." unique_id=959619856]
 physics_interpolation_mode = 1
@@ -110,8 +122,3 @@ metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 [node name="Body" type="MeshInstance3D" parent="." unique_id=1086601029]
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
-
-[node name="Gun" type="MeshInstance3D" parent="." unique_id=1271846376]
-transform = Transform3D(0.3, 0, 0, 0, 0.24, 0, 0, 0, 1.5, -0.90000004, 0.48, -0.5917337)
-visible = false
-mesh = SubResource("BoxMesh_mepjo")
