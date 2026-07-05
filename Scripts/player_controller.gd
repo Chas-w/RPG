@@ -36,7 +36,7 @@ var database
 @export_category("States")
 enum Move_State{Idle,Moving,Null}
 @export var move_state : Move_State = Move_State.Idle
-enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, Null}
+enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():

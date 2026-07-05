@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://ebp0yhwb4du5" path="res://Scripts/player_controller.gd" id="1_t5o4e"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
-[ext_resource type="Shader" uid="uid://b1vjgpmguv0vy" path="res://Shaders/pixelate.gdshader" id="4_t5o4e"]
 
 [sub_resource type="Resource" id="Resource_rlble"]
 script = ExtResource("2_t5o4e")
@@ -27,17 +26,11 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_blnjl"]
-
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_t5o4e"]
-shader = ExtResource("4_t5o4e")
-shader_parameter/pixelation = 0.0030000001425
-shader_parameter/opacity = 1.0
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_4bjip"]
-viewport_path = NodePath("UI/SubViewportContainer/SubViewport")
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_t5o4e"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 200.0
 
 [node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
 script = ExtResource("1_t5o4e")
@@ -58,8 +51,8 @@ transform = Transform3D(1, 0, 0, 0, 0.99939084, 0.034899496, 0, -0.034899496, 0.
 
 [node name="SpringArm3D" type="SpringArm3D" parent="Cam Origin" unique_id=703369229]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0)
+collision_mask = 2
 spring_length = 4.0
-margin = 1.0
 
 [node name="Default Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=1447527248]
 transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04, 0, 2.091)
@@ -94,8 +87,7 @@ transform = Transform3D(0.6614173, 0, 0, 0, 1.8177532, 0, 0, 0, 0.9015685, 0.293
 
 [node name="SpringArm3D2" type="SpringArm3D" parent="Player Body/UpperBody/Zoomed Origin" unique_id=147311797]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, -0.059068955, -0.5767886, -0.03615898)
-shape = SubResource("SphereShape3D_blnjl")
-margin = 0.5
+collision_mask = 2
 
 [node name="Close Cam" type="Node3D" parent="Player Body/UpperBody/Zoomed Origin/SpringArm3D2" unique_id=1769517213]
 transform = Transform3D(1, 0, 0, 0, 0.99785453, 0.06547278, 0, -0.06547278, 0.99785453, -0.17412782, 0.088360846, 1.3084576)
@@ -140,18 +132,14 @@ size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
 [node name="Camera" type="Camera3D" parent="UI/SubViewportContainer/SubViewport" unique_id=959619856]
-physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
 top_level = true
+attributes = SubResource("CameraAttributesPractical_t5o4e")
 h_offset = 1.5
+fov = 84.117065
 
 [node name="PhantomCameraHost" type="Node" parent="UI/SubViewportContainer/SubViewport/Camera" unique_id=1412045122]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("4_f4b76")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
-
-[node name="Pixelate" type="TextureRect" parent="UI/SubViewportContainer" unique_id=1889686691]
-material = SubResource("ShaderMaterial_t5o4e")
-layout_mode = 2
-texture = SubResource("ViewportTexture_4bjip")
