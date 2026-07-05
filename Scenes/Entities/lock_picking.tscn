@@ -35,12 +35,12 @@ lock_background = NodePath("Lock Background")
 pick = NodePath("Lock Background/Pick")
 stabilizer = NodePath("Lock Background/Stabilizer")
 limit = NodePath("Lock Background/Limit")
-safety = 2.0
 pick_limits = Vector2(50, 320)
 pick_tip = NodePath("Lock Background/Pick/tip")
 limit_tip = NodePath("Lock Background/Limit/tip")
 pivot = NodePath("Lock Background/pivot")
 pick_amount = 6
+break_buffer_max = 0.30000000000000004
 
 [node name="Lock Background" type="TextureRect" parent="." unique_id=1907827767]
 layout_mode = 1
