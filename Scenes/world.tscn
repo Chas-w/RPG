@@ -48,10 +48,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0775926, -6.5464115)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.128204, -24.777134, -28.40332)
 
 [node name="Player Controller" parent="." unique_id=1135922991 instance=ExtResource("4_8j60k")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6375332, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.637533, 0)
 
-[node name="Camera" parent="Player Controller/UI/SubViewportContainer/SubViewport" parent_id_path=PackedInt32Array(1135922991, 49592246) index="0" unique_id=959619856]
-transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, 1.210508, 2.0897267)
+[node name="Camera" parent="Player Controller" index="3" unique_id=959619856]
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, 5.210508, 2.0897267)
 
 [editable path="Mountains"]
 [editable path="Player Controller"]
