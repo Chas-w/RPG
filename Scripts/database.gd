@@ -6,6 +6,8 @@ var player_inventory_path = "res://DATA/INVENTORY.json"
 @export_category("Pause Menu")
 @export var menu_UI : Control
 @export var save_game : Button
+@export var inventory : Button
+@export var options : Button
 @export var exit_game : Button
 var pause_game : bool
 
