@@ -40,31 +40,32 @@ enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	speed = WALK_SPEED
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
+	database.access_player = self
 	status_dictionary = database._JSON_to_dictionary(database.player_status_path)
 	inventory_dictionary = database._JSON_to_dictionary(database.player_inventory_path)
 	health = status_dictionary.Health
 	morality = status_dictionary.Morality
 
 func _process(delta):
-	input_dir = Input.get_vector("left", "right", "up", "down")
-	direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	
-	#gun and zoom
-	if (Input.is_action_just_pressed("gun")):
-		inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
-		gun.visible = !gun.visible
-	_handle_zoom(delta)
-	
-	#camera
-	_handle_follow_cam(delta)
-	
-	#set up moving
-	if(direction && move_state != Move_State.Moving):
-		_set_move_state(Move_State.Moving)
+	if (!database.pause_game):
+		input_dir = Input.get_vector("left", "right", "up", "down")
+		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		
+		#gun and zoom
+		if (Input.is_action_just_pressed("gun")):
+			inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
+			gun.visible = !gun.visible
+		_handle_zoom(delta)
+		
+		#camera
+		_handle_follow_cam(delta)
+		
+		#set up moving
+		if(direction && move_state != Move_State.Moving):
+			_set_move_state(Move_State.Moving)
 
 func _physics_process(delta):
 	#rotation
@@ -80,13 +81,17 @@ func _physics_process(delta):
 		Move_State.Moving:
 			_handle_movement(delta)
 			pass
+	
+	if (database.pause_game):
+		player_body.linear_velocity = Vector3.ZERO
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		cam_origin.rotation.x -= event.relative.y * SENSITIVITY
-		# Prevent the camera from rotating too far up or down.
-		cam_origin.rotation.x = clampf(cam_origin.rotation.x, -90, 90)
-		cam_origin.rotation.y += -event.relative.x * SENSITIVITY
+	if (!database.pause_game):
+		if event is InputEventMouseMotion:
+			cam_origin.rotation.x -= event.relative.y * SENSITIVITY
+			# Prevent the camera from rotating too far up or down.
+			cam_origin.rotation.x = clampf(cam_origin.rotation.x, -90, 90)
+			cam_origin.rotation.y += -event.relative.x * SENSITIVITY
 
 func _handle_movement(delta):
 		# Handle Sprint.
