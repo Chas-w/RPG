@@ -2,6 +2,11 @@ extends Node
 
 var player_status_path = "res://DATA/STATUS.json"
 var player_inventory_path = "res://DATA/INVENTORY.json"
+@export var autosave_enabled : bool
+
+@export_category("All Inventory Items")
+@export var permanent_items : Dictionary
+@export var removable_items : Dictionary
 
 @export_category("Pause Menu")
 @export var menu_UI : Control
@@ -9,8 +14,8 @@ var player_inventory_path = "res://DATA/INVENTORY.json"
 @export var inventory : Button
 @export var options : Button
 @export var exit_game : Button
+var saving : bool
 var pause_game : bool
-
 var access_player : Node3D
 
 func _ready():
@@ -28,7 +33,8 @@ func _process(delta):
 	if(!pause_game && menu_UI.visible):
 		menu_UI.visible = false
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+	if(save_game.button_pressed):
+		saving = true
 	if (exit_game.button_pressed):
 		_quit_game()
 

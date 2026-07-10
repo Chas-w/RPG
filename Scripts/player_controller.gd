@@ -29,9 +29,13 @@ var zoomed : bool
 @export var health : float
 @export var morality : float
 @export var gun : MeshInstance3D
+var target_item : Node3D
+var can_pickup : bool 
 var status_dictionary
 var inventory_dictionary #consider inventory in sep. node
 var database
+var time_to_autosave_max = 600
+var autosave_timer
 
 @export_category("States")
 enum Move_State{Idle,Moving,Null}
@@ -48,11 +52,20 @@ func _ready():
 	inventory_dictionary = database._JSON_to_dictionary(database.player_inventory_path)
 	health = status_dictionary.Health
 	morality = status_dictionary.Morality
+	autosave_timer = time_to_autosave_max
 
 func _process(delta):
+	if (database.saving):
+		_update_JSON_data()
+		print("SAVING...")
+		autosave_timer = time_to_autosave_max
+		database.saving = false
+	if (database.autosave_enabled):
+		_handle_autosave()
 	if (!database.pause_game):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		_handle_adding_inventory()
 		
 		#gun and zoom
 		if (Input.is_action_just_pressed("gun")):
@@ -92,6 +105,25 @@ func _input(event: InputEvent) -> void:
 			# Prevent the camera from rotating too far up or down.
 			cam_origin.rotation.x = clampf(cam_origin.rotation.x, -90, 90)
 			cam_origin.rotation.y += -event.relative.x * SENSITIVITY
+
+func _handle_autosave():
+	if(autosave_timer >= 0):
+		autosave_timer -= get_process_delta_time()
+	else:
+		_update_JSON_data()
+		print("AUTOSAVING...")
+		autosave_timer = time_to_autosave_max
+
+func _handle_adding_inventory(): ##handles adding an item to your inventory
+	if(Input.is_action_just_pressed("interact")):
+		if(can_pickup && target_item != null):
+			if(!target_item.permanent):
+				inventory_dictionary.Removable.append(target_item.ID)
+				target_item.queue_free()
+				can_pickup = false
+			else:
+				#this is called when the player grabs a permanent item
+				pass
 
 func _handle_movement(delta):
 		# Handle Sprint.

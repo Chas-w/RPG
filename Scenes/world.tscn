@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://brxh4j66crg80" path="res://Scenes/Entities/npc.tscn" id="2_go701"]
 [ext_resource type="PackedScene" uid="uid://dfban5mvvjrv7" path="res://Imports/Mesh/Mountains.fbx" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://cs5uw5ng78niv" path="res://Scenes/Entities/Player Controller.tscn" id="4_8j60k"]
+[ext_resource type="PackedScene" uid="uid://d273rn50d72ke" path="res://Scenes/Entities/inventory_item.tscn" id="4_fo5ed"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5a7ea"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -26,6 +27,8 @@ albedo_color = Color(0.40363345, 0.44684935, 0.29901007, 1)
 
 [node name="World" type="Node3D" unique_id=1250724674]
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=527794572]
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=610702725]
 environment = SubResource("Environment_fo5ed")
 
@@ -39,8 +42,6 @@ shape = SubResource("BoxShape3D_yp4wr")
 mesh = SubResource("BoxMesh_a02cp")
 surface_material_override/0 = SubResource("StandardMaterial3D_go701")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=527794572]
-
 [node name="NPC" parent="." unique_id=440338480 instance=ExtResource("2_go701")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0775926, -6.5464115)
 
@@ -52,6 +53,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.637533, 0)
 
 [node name="Camera" parent="Player Controller" index="3" unique_id=959619856]
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, 5.210508, 2.0897267)
+
+[node name="Inventory Item" parent="." unique_id=148709383 instance=ExtResource("4_fo5ed")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2773745, 0)
+ID = "Item Test"
 
 [editable path="Mountains"]
 [editable path="Player Controller"]

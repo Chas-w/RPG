@@ -32,7 +32,7 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 dof_blur_far_enabled = true
 dof_blur_far_distance = 200.0
 
-[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun")]
+[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
@@ -69,7 +69,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 
-[node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661]
+[node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661 groups=["Player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
 can_sleep = false
 lock_rotation = true

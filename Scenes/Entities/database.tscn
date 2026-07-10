@@ -5,6 +5,9 @@
 
 [node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("menu_UI", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
 script = ExtResource("1_crblt")
+removable_items = {
+"Item Test": "res://Scenes/Entities/inventory_item.tscn"
+}
 menu_UI = NodePath("UI/Menu UI")
 save_game = NodePath("UI/Menu UI/HBoxContainer/Save Game")
 inventory = NodePath("UI/Menu UI/HBoxContainer/Inventory")

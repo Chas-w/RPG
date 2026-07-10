@@ -1,9 +1,10 @@
 {
 	"Permanent": {
-		"Gun" : {
-			"Active" : false,
-			"Ammo" : 0
+		"Gun": {
+			"Active": false,
+			"Ammo": 0.0
 		}
 	},
-	"Removable": []
+	"Removable": [
+	]
 }

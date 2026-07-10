@@ -30,6 +30,8 @@ import/blender/enabled=false
 [global_group]
 
 Database=""
+Player=""
+"Player Controller"=""
 
 [input]
 
