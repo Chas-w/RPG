@@ -28,6 +28,9 @@ func _process(delta):
 	if(!pause_game && menu_UI.visible):
 		menu_UI.visible = false
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	if (exit_game.button_pressed):
+		_quit_game()
 
 func _JSON_to_dictionary(data_path:String): #returns true if JSON contains key
 	var file = FileAccess.get_file_as_string(data_path)
@@ -39,3 +42,6 @@ func _save_JSON_file(data_path:String, game_data):
 	var file = FileAccess.open(data_path, FileAccess.WRITE)
 	file.store_line(json)
 	file.close()
+	
+func _quit_game():
+	get_tree().quit()
