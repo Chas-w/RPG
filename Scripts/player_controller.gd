@@ -29,6 +29,7 @@ var zoomed : bool
 @export var health : float
 @export var morality : float
 @export var gun : MeshInstance3D
+@export var inventory_handler : Node3D
 var target_item : Node3D
 var can_pickup : bool 
 var status_dictionary

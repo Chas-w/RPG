@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://ebp0yhwb4du5" path="res://Scripts/player_controller.gd" id="1_t5o4e"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
+[ext_resource type="Script" uid="uid://bbk7cawn32xbw" path="res://Scripts/inventory_handler.gd" id="5_t5o4e"]
 
 [sub_resource type="Resource" id="Resource_rlble"]
 script = ExtResource("2_t5o4e")
@@ -32,7 +33,7 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 dof_blur_far_enabled = true
 dof_blur_far_distance = 200.0
 
-[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
+[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun", "inventory_handler") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
@@ -45,6 +46,7 @@ cam_follow_weight = 8.0
 cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
 gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
+inventory_handler = NodePath("Inventory")
 
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
 transform = Transform3D(1, 0, 0, 0, 0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, -1.5, -0.5, 0)
@@ -120,3 +122,6 @@ process_priority = 300
 process_physics_priority = 300
 script = ExtResource("4_f4b76")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
+
+[node name="Inventory" type="Node3D" parent="." unique_id=1947591991]
+script = ExtResource("5_t5o4e")
