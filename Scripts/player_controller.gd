@@ -8,13 +8,20 @@ extends Node3D
 @export var climb_speed = .2
 var grounded
 var stamina
+var stamina_fully_recovered : bool
+var stamina_fully_depleated : bool
 var climbing : bool 
+var sprinting : bool
 ##how much stamina is affected by climbing
 var climb_effort = 10
 ##how much running affects stamina
 var run_effort = 5
 ##how much stamina recovers by
 var stamina_recovery = 10
+##how much time before stamina starts recovering
+var stamina_recovery_buffer_max = 1
+var recovery_buffer
+
 var speed
 var input_dir 
 var direction 
@@ -65,11 +72,13 @@ enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():
+	recovery_buffer = stamina_recovery_buffer_max
 	speed = WALK_SPEED
-	stamina = max_stamina
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
 	database.access_player = self
+	max_stamina = database.stamina_bar.max_value
+	stamina = max_stamina
 	status_dictionary = database._JSON_to_dictionary(database.player_status_path)
 	inventory_dictionary = database._JSON_to_dictionary(database.player_inventory_path)
 	health = status_dictionary.Health
@@ -80,6 +89,9 @@ func _process(delta):
 	#ground check
 	grounded = ground_cast.is_colliding()
 	
+	#stamina
+	_handle_stamina()
+	
 	#save game behavior
 	if (database.saving):
 		_update_JSON_data()
@@ -89,13 +101,7 @@ func _process(delta):
 	if (database.autosave_enabled):
 		_handle_autosave()
 	
-	#stamina
-	database.stamina_bar.value = stamina
-	if (grounded && !climbing && !Input.is_action_pressed("sprint") && stamina != max_stamina):
-		stamina += stamina_recovery * delta
-		if(stamina >= max_stamina):
-			stamina = max_stamina
-
+	#handle move check
 	if (!database.pause_game):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -147,7 +153,34 @@ func _input(event: InputEvent) -> void:
 			# Prevent the camera from rotating too far up or down.
 			cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
 			cam_origin.rotation.y += -event.relative.x * SENSITIVITY
-			
+
+func _handle_stamina():
+		#stamina
+	database.stamina_bar.value = stamina
+	if (!stamina_fully_depleated):
+		if (grounded && !climbing && !sprinting && stamina <= max_stamina || player_body.linear_velocity == Vector3.ZERO):
+			if(recovery_buffer >= 0):
+				recovery_buffer -= get_process_delta_time()
+			else:
+				stamina += stamina_recovery * get_process_delta_time()
+				if(stamina >= max_stamina):
+					stamina = max_stamina
+		else:
+			recovery_buffer = stamina_recovery_buffer_max
+	else:
+		if(player_body.linear_velocity == Vector3.ZERO):
+			if(recovery_buffer >= 0):
+				recovery_buffer -= get_process_delta_time()
+			else:
+				stamina += stamina_recovery * get_process_delta_time()
+				if(stamina >= max_stamina):
+					stamina = max_stamina
+	stamina_fully_recovered = stamina >= max_stamina
+	if (stamina <= 0):
+		stamina_fully_depleated = true
+	if (stamina_fully_recovered):
+		stamina_fully_depleated = false
+
 func _handle_autosave():
 	if(autosave_timer >= 0):
 		autosave_timer -= get_process_delta_time()
@@ -170,10 +203,12 @@ func _handle_adding_inventory(): ##handles adding an item to your inventory
 func _handle_movement():
 		# Handle Sprint.
 	if(!zoomed):
-		if Input.is_action_pressed("sprint"):
+		if (Input.is_action_pressed("sprint") && stamina > 0 && !stamina_fully_depleated):
 			speed = SPRINT_SPEED
 			stamina -= run_effort * get_process_delta_time()
+			sprinting = true
 		else:
+			sprinting = false
 			speed = WALK_SPEED
 	# Get the input direction and handle the movement/deceleration.
 	if direction:
