@@ -2,13 +2,16 @@ extends Node3D
 @export_category("Movement")
 @export var player_body : RigidBody3D
 @export var lower_body_visual : MeshInstance3D
+@export var climb_checker : RayCast3D
 var speed
 var input_dir 
 var direction 
+#basic move variables
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 const JUMP_VELOCITY = 4.8
 const SENSITIVITY = 0.0004
+var climb_speed = 2.0
 #fov variables
 const DEFAULT_FOV = 75.0
 const ZOOM_FOV = 50
@@ -29,7 +32,6 @@ var zoomed : bool
 @export var health : float
 @export var morality : float
 @export var gun : MeshInstance3D
-@export var inventory_handler : Node3D
 var target_item : Node3D
 var can_pickup : bool 
 var status_dictionary
@@ -39,7 +41,7 @@ var time_to_autosave_max = 600
 var autosave_timer
 
 @export_category("States")
-enum Move_State{Idle,Moving,Null}
+enum Move_State{Idle,Moving,Climbing,Null}
 @export var move_state : Move_State = Move_State.Idle
 enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
@@ -56,6 +58,7 @@ func _ready():
 	autosave_timer = time_to_autosave_max
 
 func _process(delta):
+	#save game behavior
 	if (database.saving):
 		_update_JSON_data()
 		print("SAVING...")
@@ -63,6 +66,7 @@ func _process(delta):
 		database.saving = false
 	if (database.autosave_enabled):
 		_handle_autosave()
+	
 	if (!database.pause_game):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -80,6 +84,10 @@ func _process(delta):
 		#set up moving
 		if(direction && move_state != Move_State.Moving):
 			_set_move_state(Move_State.Moving)
+	
+		#climbing behavior
+		if(database._check_raycast(climb_checker,"Climbable")):
+			print("can climb")
 
 func _physics_process(delta):
 	#rotation

@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://ebp0yhwb4du5" path="res://Scripts/player_controller.gd" id="1_t5o4e"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
-[ext_resource type="Script" uid="uid://bbk7cawn32xbw" path="res://Scripts/inventory_handler.gd" id="5_t5o4e"]
 
 [sub_resource type="Resource" id="Resource_rlble"]
 script = ExtResource("2_t5o4e")
@@ -33,10 +32,11 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 dof_blur_far_enabled = true
 dof_blur_far_distance = 200.0
 
-[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun", "inventory_handler") groups=["Player Controller"]]
+[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "climb_checker", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
+climb_checker = NodePath("Player Body/UpperBody/Climb Checker")
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
@@ -46,7 +46,6 @@ cam_follow_weight = 8.0
 cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
 gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
-inventory_handler = NodePath("Inventory")
 
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
 transform = Transform3D(1, 0, 0, 0, 0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, -1.5, -0.5, 0)
@@ -102,10 +101,14 @@ transform = Transform3D(0.30000004, 0, 0, 0, 0.23138511, -0.39828357, 0, 0.06372
 visible = false
 mesh = SubResource("BoxMesh_mepjo")
 
-[node name="RayCast3D" type="RayCast3D" parent="Player Body/UpperBody/Zoomed Origin/Gun" unique_id=669128208]
+[node name="Shoot Cast" type="RayCast3D" parent="Player Body/UpperBody/Zoomed Origin/Gun" unique_id=669128208]
 transform = Transform3D(3.277267, 0, 0, 0, -6.2952076e-08, -4.012739, 0, 1.4401757, -1.754024e-07, 0, 0, 0)
 target_position = Vector3(0, -10, 0)
 collision_mask = 2
+
+[node name="Climb Checker" type="RayCast3D" parent="Player Body/UpperBody" unique_id=1584802665]
+transform = Transform3D(0.6614173, 0, 0, 0, -8.187819e-08, -1.8731546, 0, 0.7799639, -3.4093304e-08, 0, -0.91182303, -0.3553899)
+collision_mask = 4
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
 transform = Transform3D(1, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000002, 0, 0.9685745, 0)
@@ -122,6 +125,3 @@ process_priority = 300
 process_physics_priority = 300
 script = ExtResource("4_f4b76")
 metadata/_custom_type_script = "uid://bd046eokvcnu2"
-
-[node name="Inventory" type="Node3D" parent="." unique_id=1947591991]
-script = ExtResource("5_t5o4e")

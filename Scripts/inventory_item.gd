@@ -1,10 +1,18 @@
 extends Node3D
+@export_category("Info")
 @export var ID : String
 @export var permanent : bool 
 @export var interact_label : Label3D
 var interact_message = "E"
 var database 
 var player
+
+@export_category("UI") 
+##path to ui texture
+@export var item_ui_tex : String
+##path to rotatable mesh
+@export var item_rotate_mesh : String
+
 
 func _ready():
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database

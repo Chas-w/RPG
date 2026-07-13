@@ -2,13 +2,15 @@
 
 [ext_resource type="Script" uid="uid://k625y2ohn1lr" path="res://Scripts/database.gd" id="1_crblt"]
 [ext_resource type="Texture2D" uid="uid://qjjxhflxkyob" path="res://Imports/Textures/Temp/Map Temp.jpg" id="2_w614c"]
+[ext_resource type="Script" uid="uid://d7x4q8vaoym" path="res://Scripts/inventory_ui.gd" id="3_scmpp"]
 
-[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("menu_UI", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
+[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("inventory_ui", "menu_ui", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
 script = ExtResource("1_crblt")
 removable_items = {
 "Item Test": "res://Scenes/Entities/inventory_item.tscn"
 }
-menu_UI = NodePath("UI/Menu UI")
+inventory_ui = NodePath("UI/Inventory UI")
+menu_ui = NodePath("UI/Menu UI")
 save_game = NodePath("UI/Menu UI/HBoxContainer/Save Game")
 inventory = NodePath("UI/Menu UI/HBoxContainer/Inventory")
 options = NodePath("UI/Menu UI/HBoxContainer/Options")
@@ -72,3 +74,62 @@ offset_right = 1201.9061
 offset_bottom = 1201.8845
 scale = Vector2(0.03, 0.03)
 texture = ExtResource("2_w614c")
+
+[node name="Inventory UI" type="Control" parent="UI" unique_id=1437951676 node_paths=PackedStringArray("database")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+script = ExtResource("3_scmpp")
+database = NodePath("../..")
+
+[node name="Inventory Layout" type="GridContainer" parent="UI/Inventory UI" unique_id=507222030]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -981.0
+offset_top = -1478.0001
+offset_right = 1475.0
+offset_bottom = 1482.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.134, 0.134)
+pivot_offset_ratio = Vector2(0.5, 0.5)
+columns = 3
+
+[node name="TextureButton" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=613200962]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton5" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=369925152]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton6" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=1460635042]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton7" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=952701776]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton8" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=1271003032]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton9" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=2098709802]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton10" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=2013132078]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")
+
+[node name="TextureButton2" type="TextureButton" parent="UI/Inventory UI/Inventory Layout" unique_id=434799235]
+layout_mode = 2
+texture_normal = ExtResource("2_w614c")

@@ -25,6 +25,10 @@ glow_enabled = true
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_go701"]
 albedo_color = Color(0.40363345, 0.44684935, 0.29901007, 1)
 
+[sub_resource type="BoxMesh" id="BoxMesh_8j60k"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fo5ed"]
+
 [node name="World" type="Node3D" unique_id=1250724674]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=527794572]
@@ -57,6 +61,16 @@ transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.999
 [node name="Inventory Item" parent="." unique_id=148709383 instance=ExtResource("4_fo5ed")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2773745, 0)
 ID = "Item Test"
+
+[node name="Climbing Wall" type="StaticBody3D" parent="." unique_id=649051369 groups=["Climbable"]]
+transform = Transform3D(1, 0, 0, 0, 11.625001, 0, 0, 0, 10.7, -8, 5.4846616, 0)
+collision_layer = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Climbing Wall" unique_id=271029473]
+mesh = SubResource("BoxMesh_8j60k")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Climbing Wall" unique_id=1608959201]
+shape = SubResource("BoxShape3D_fo5ed")
 
 [editable path="Mountains"]
 [editable path="Player Controller"]
