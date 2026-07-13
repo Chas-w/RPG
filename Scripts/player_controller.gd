@@ -2,9 +2,11 @@ extends Node3D
 @export_category("Movement")
 @export var player_body : RigidBody3D
 @export var lower_body_visual : MeshInstance3D
+@export var ground_cast : RayCast3D
 @export var climb_checker : RayCast3D
 @export var max_stamina : float
 @export var climb_speed = .2
+var grounded
 var stamina
 var climbing : bool 
 var speed
@@ -13,7 +15,7 @@ var direction
 #basic move variables
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
-const JUMP_VELOCITY = 4.8
+const JUMP_VELOCITY = 8
 const SENSITIVITY = 0.0004
 #fov variables
 const DEFAULT_FOV = 75.0
@@ -62,6 +64,8 @@ func _ready():
 	autosave_timer = time_to_autosave_max
 
 func _process(delta):
+	#ground check
+	grounded = ground_cast.is_colliding()
 	#save game behavior
 	if (database.saving):
 		_update_JSON_data()
@@ -86,12 +90,12 @@ func _process(delta):
 		_handle_follow_cam(delta)
 		
 		#set up moving
-		if(direction && move_state != Move_State.Moving && !climbing):
+		if(direction && move_state != Move_State.Moving && !climbing && grounded):
 			_set_move_state(Move_State.Moving)
 	
 		#climbing behavior
 		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
-			if(Input.is_action_just_pressed("jump")):
+			if(Input.is_action_pressed("jump")):
 				_set_move_state(Move_State.Climbing)
 
 func _physics_process(delta):
@@ -164,6 +168,7 @@ func _handle_movement():
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
 	if (Input.is_action_pressed("jump")):
+		#will likely need to change later
 		climbing = true
 		player_body.freeze = true
 		if direction:
