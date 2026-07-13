@@ -26,11 +26,18 @@ const SPRINT_FOV = 100
 @export var cam : Camera3D
 @export var default_cam : PhantomCamera3D
 @export var zoom_cam : PhantomCamera3D
+#center of teh camera view
 @export var center_point : Marker3D
+##how long it takes each axis to follow the player
 @export var follow_buffer: Vector4
+##how accurate the camera follow is
 @export var cam_follow_weight : float
+##origin point of the default camera
 @export var cam_origin : Node3D
+##origin point of the aiming camera
 @export var zoomed_origin : Node3D
+##how long it takes the lower body to match rotation
+@export var rotation_buffer : float
 var zoomed : bool
 
 @export_category("Player Data Info")
@@ -100,7 +107,7 @@ func _process(delta):
 
 func _physics_process(delta):
 	#rotation
-	player_body.rotation.y = cam_origin.rotation.y
+	_body_rotation()
 	# jump
 	if(Input.is_action_just_pressed("jump") && player_body.linear_velocity.y <= 0):
 		player_body.linear_velocity.y += JUMP_VELOCITY * 45 * delta
@@ -165,6 +172,11 @@ func _handle_movement():
 	if(player_body.linear_velocity.x <= 0 && player_body.linear_velocity.y <= 0):
 		_set_move_state(Move_State.Idle)
 
+func _body_rotation():
+	#top rotation
+	player_body.rotation.y = cam_origin.rotation.y
+	#lower rotation
+	lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
 	if (Input.is_action_pressed("jump")):
@@ -177,9 +189,10 @@ func _handle_climbing():
 			player_body.position.z += direction.z * climb_speed * get_process_delta_time() 
 		#stamina
 		#clamp rotation 
-	else:
+		#pull self to top of structure if at the top
+	if(!Input.is_action_pressed("jump") || stamina <= 0 || !climb_checker.is_colliding()):
+		#jump AWAY from wall when jump is released
 		_set_move_state(Move_State.Idle)
-
 
 func _handle_zoom(delta):
 	if(Input.is_action_pressed("zoom")):

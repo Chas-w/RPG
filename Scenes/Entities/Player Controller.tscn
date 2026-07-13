@@ -24,6 +24,9 @@ noise = SubResource("FastNoiseLite_mepjo")
 albedo_color = Color(0.9960334, 0, 0.6155507, 1)
 albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
+[sub_resource type="BoxMesh" id="BoxMesh_oqlhh"]
+size = Vector3(2.3503418, 0.29370117, 0.328125)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
@@ -38,6 +41,7 @@ player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
 ground_cast = NodePath("Body/Ground Cast")
 climb_checker = NodePath("Player Body/UpperBody/Climb Checker")
+max_stamina = 50.0
 climb_speed = 1.5
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
@@ -47,6 +51,7 @@ follow_buffer = Vector4(0.1, 1, 5, 0.5)
 cam_follow_weight = 8.0
 cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
+rotation_buffer = 5.0
 gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
 
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
@@ -75,6 +80,10 @@ surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 [node name="Ground Cast" type="RayCast3D" parent="Body" unique_id=217260227]
 transform = Transform3D(1, 0, 0, 0, 0.2, 0, 0, 0, 1, 0, -0.954, 0)
 debug_shape_thickness = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Body" unique_id=1026149797]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25793457, -0.10070801, -0.123046875)
+mesh = SubResource("BoxMesh_oqlhh")
 
 [node name="Player Body" type="RigidBody3D" parent="." unique_id=919998661 groups=["Player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
