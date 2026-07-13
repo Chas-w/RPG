@@ -28,6 +28,9 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_dyyqa"]
+size = Vector3(1.7924805, 0.11343384, 0.3876953)
+
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_t5o4e"]
 dof_blur_far_enabled = true
 dof_blur_far_distance = 200.0
@@ -37,6 +40,7 @@ script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
 climb_checker = NodePath("Player Body/UpperBody/Climb Checker")
+climb_speed = 1.5
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
@@ -112,6 +116,10 @@ collision_mask = 4
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
 transform = Transform3D(1, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000002, 0, 0.9685745, 0)
+
+[node name="delete me" type="MeshInstance3D" parent="Player Body" unique_id=1861262772]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.076822996, -0.28857577, -0.011155322)
+mesh = SubResource("BoxMesh_dyyqa")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=959619856]
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)

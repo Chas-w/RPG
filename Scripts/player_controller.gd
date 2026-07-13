@@ -3,6 +3,9 @@ extends Node3D
 @export var player_body : RigidBody3D
 @export var lower_body_visual : MeshInstance3D
 @export var climb_checker : RayCast3D
+@export var max_stamina : float
+@export var climb_speed = .2
+var stamina
 var climbing : bool 
 var speed
 var input_dir 
@@ -12,7 +15,6 @@ const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 const JUMP_VELOCITY = 4.8
 const SENSITIVITY = 0.0004
-var climb_speed = 2.0
 #fov variables
 const DEFAULT_FOV = 75.0
 const ZOOM_FOV = 50
@@ -49,6 +51,7 @@ enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 
 func _ready():
 	speed = WALK_SPEED
+	stamina = max_stamina
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
 	database.access_player = self
@@ -87,8 +90,9 @@ func _process(delta):
 			_set_move_state(Move_State.Moving)
 	
 		#climbing behavior
-		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing):
-			print("can climb")
+		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
+			if(Input.is_action_just_pressed("jump")):
+				_set_move_state(Move_State.Climbing)
 
 func _physics_process(delta):
 	#rotation
@@ -102,7 +106,10 @@ func _physics_process(delta):
 	#movement state machine
 	match(move_state):
 		Move_State.Moving:
-			_handle_movement(delta)
+			_handle_movement()
+			pass
+		Move_State.Climbing:
+			_handle_climbing()
 			pass
 	
 	if (database.pause_game):
@@ -135,7 +142,7 @@ func _handle_adding_inventory(): ##handles adding an item to your inventory
 				#this is called when the player grabs a permanent item
 				pass
 
-func _handle_movement(delta):
+func _handle_movement():
 		# Handle Sprint.
 	if(!zoomed):
 		if Input.is_action_pressed("sprint"):
@@ -147,12 +154,27 @@ func _handle_movement(delta):
 		player_body.linear_velocity.x = direction.x *  speed
 		player_body.linear_velocity.z = direction.z * speed
 	else:
-		player_body.linear_velocity.x = lerp(player_body.linear_velocity.x, direction.x * speed, delta * 7.0)
-		player_body.linear_velocity.z = lerp(player_body.linear_velocity.z, direction.z * speed, delta * 7.0)
+		player_body.linear_velocity.x = lerp(player_body.linear_velocity.x, direction.x * speed, get_process_delta_time()   * 7.0)
+		player_body.linear_velocity.z = lerp(player_body.linear_velocity.z, direction.z * speed, get_process_delta_time()   * 7.0)
 	player_body.position.normalized()
 	#exit move
 	if(player_body.linear_velocity.x <= 0 && player_body.linear_velocity.y <= 0):
 		_set_move_state(Move_State.Idle)
+
+func _handle_climbing():
+	# Get the input direction and handle the movement/deceleration.
+	if (Input.is_action_pressed("jump")):
+		climbing = true
+		player_body.freeze = true
+		if direction:
+			#idk why this is working but it is
+			player_body.position.y -= direction.x * climb_speed * get_process_delta_time()  
+			player_body.position.z += direction.z * climb_speed * get_process_delta_time() 
+		#stamina
+		#clamp rotation 
+	else:
+		_set_move_state(Move_State.Idle)
+
 
 func _handle_zoom(delta):
 	if(Input.is_action_pressed("zoom")):
@@ -190,6 +212,9 @@ func _set_move_state(next_move_state:int):
 		
 	#check last state
 	match(prev_move_state):
+		Move_State.Climbing:
+			climbing = false
+			player_body.freeze = false
 		pass
 	#check upcoming state
 	match(next_move_state):
