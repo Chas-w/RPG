@@ -3,6 +3,7 @@ extends Node3D
 @export var player_body : RigidBody3D
 @export var lower_body_visual : MeshInstance3D
 @export var climb_checker : RayCast3D
+var climbing : bool 
 var speed
 var input_dir 
 var direction 
@@ -82,11 +83,11 @@ func _process(delta):
 		_handle_follow_cam(delta)
 		
 		#set up moving
-		if(direction && move_state != Move_State.Moving):
+		if(direction && move_state != Move_State.Moving && !climbing):
 			_set_move_state(Move_State.Moving)
 	
 		#climbing behavior
-		if(database._check_raycast(climb_checker,"Climbable")):
+		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing):
 			print("can climb")
 
 func _physics_process(delta):
