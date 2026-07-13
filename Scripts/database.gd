@@ -18,6 +18,7 @@ var open_inventory : bool
 @export var inventory : Button
 @export var options : Button
 @export var exit_game : Button
+@export var stamina_bar : ProgressBar
 var saving : bool
 var pause_game : bool
 var access_player : Node3D

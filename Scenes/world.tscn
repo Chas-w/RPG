@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dfban5mvvjrv7" path="res://Imports/Mesh/Mountains.fbx" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://cs5uw5ng78niv" path="res://Scenes/Entities/Player Controller.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://d273rn50d72ke" path="res://Scenes/Entities/inventory_item.tscn" id="4_fo5ed"]
+[ext_resource type="PackedScene" uid="uid://baoaywlbjf36" path="res://Scenes/Entities/door.tscn" id="5_fo5ed"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5a7ea"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -26,6 +27,9 @@ glow_enabled = true
 albedo_color = Color(0.40363345, 0.44684935, 0.29901007, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_8j60k"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pvk8e"]
+albedo_color = Color(1, 1, 0, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fo5ed"]
 
@@ -68,9 +72,13 @@ collision_layer = 5
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Climbing Wall" unique_id=271029473]
 mesh = SubResource("BoxMesh_8j60k")
+surface_material_override/0 = SubResource("StandardMaterial3D_pvk8e")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Climbing Wall" unique_id=1608959201]
 shape = SubResource("BoxShape3D_fo5ed")
+
+[node name="Door" parent="." unique_id=127991376 instance=ExtResource("5_fo5ed")]
+transform = Transform3D(2, 0, 0, 0, 4, 0, 0, 0, 0.1, -7.494251, 0, -5.113329)
 
 [editable path="Mountains"]
 [editable path="Player Controller"]

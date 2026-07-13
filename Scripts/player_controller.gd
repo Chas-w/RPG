@@ -9,6 +9,12 @@ extends Node3D
 var grounded
 var stamina
 var climbing : bool 
+##how much stamina is affected by climbing
+var climb_effort = 10
+##how much running affects stamina
+var run_effort = 5
+##how much stamina recovers by
+var stamina_recovery = 10
 var speed
 var input_dir 
 var direction 
@@ -73,6 +79,7 @@ func _ready():
 func _process(delta):
 	#ground check
 	grounded = ground_cast.is_colliding()
+	
 	#save game behavior
 	if (database.saving):
 		_update_JSON_data()
@@ -82,6 +89,13 @@ func _process(delta):
 	if (database.autosave_enabled):
 		_handle_autosave()
 	
+	#stamina
+	database.stamina_bar.value = stamina
+	if (grounded && !climbing && !Input.is_action_pressed("sprint") && stamina != max_stamina):
+		stamina += stamina_recovery * delta
+		if(stamina >= max_stamina):
+			stamina = max_stamina
+
 	if (!database.pause_game):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -131,9 +145,9 @@ func _input(event: InputEvent) -> void:
 		if event is InputEventMouseMotion:
 			cam_origin.rotation.x -= event.relative.y * SENSITIVITY
 			# Prevent the camera from rotating too far up or down.
-			cam_origin.rotation.x = clampf(cam_origin.rotation.x, -90, 90)
+			cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
 			cam_origin.rotation.y += -event.relative.x * SENSITIVITY
-
+			
 func _handle_autosave():
 	if(autosave_timer >= 0):
 		autosave_timer -= get_process_delta_time()
@@ -158,6 +172,7 @@ func _handle_movement():
 	if(!zoomed):
 		if Input.is_action_pressed("sprint"):
 			speed = SPRINT_SPEED
+			stamina -= run_effort * get_process_delta_time()
 		else:
 			speed = WALK_SPEED
 	# Get the input direction and handle the movement/deceleration.
@@ -176,7 +191,9 @@ func _body_rotation():
 	#top rotation
 	player_body.rotation.y = cam_origin.rotation.y
 	#lower rotation
-	lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
+	if (!climbing):
+		lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
+
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
 	if (Input.is_action_pressed("jump")):
@@ -184,11 +201,12 @@ func _handle_climbing():
 		climbing = true
 		player_body.freeze = true
 		if direction:
+			stamina -= climb_effort * get_process_delta_time()
 			#idk why this is working but it is
 			player_body.position.y -= direction.x * climb_speed * get_process_delta_time()  
-			player_body.position.z += direction.z * climb_speed * get_process_delta_time() 
-		#stamina
-		#clamp rotation 
+			player_body.position.z += direction.z * climb_speed * get_process_delta_time()
+		else:
+			stamina -= climb_effort/4 * get_process_delta_time() 
 		#pull self to top of structure if at the top
 	if(!Input.is_action_pressed("jump") || stamina <= 0 || !climb_checker.is_colliding()):
 		#jump AWAY from wall when jump is released
