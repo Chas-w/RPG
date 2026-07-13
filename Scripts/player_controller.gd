@@ -108,11 +108,18 @@ func _process(delta):
 		_handle_adding_inventory()
 		
 		#gun and zoom
-		if (Input.is_action_just_pressed("gun")):
-			inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
-			gun.visible = !gun.visible
-		_handle_zoom(delta)
-		
+		if (!climbing):
+			if (Input.is_action_just_pressed("gun")):
+				inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
+				gun.visible = !gun.visible
+			_handle_zoom(delta)
+		else:
+			cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
+			gun.visible = false
+			inventory_dictionary.Permanent.Gun.Active = false
+
+
+			
 		#camera
 		_handle_follow_cam(delta)
 		
@@ -231,7 +238,7 @@ func _body_rotation():
 
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
-	if (Input.is_action_pressed("jump")):
+	if (Input.is_action_pressed("jump") && stamina > 0):
 		#will likely need to change later
 		climbing = true
 		player_body.freeze = true
