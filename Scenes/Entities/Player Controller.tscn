@@ -32,14 +32,13 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 dof_blur_far_enabled = true
 dof_blur_far_distance = 200.0
 
-[node name="Player Controller" type="Node3D" unique_id=1135922991 node_paths=PackedStringArray("player_body", "lower_body_visual", "ground_cast", "climb_checker", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
+[node name="Player Controller" type="Node3D" unique_id=1667299940 node_paths=PackedStringArray("player_body", "lower_body_visual", "ground_cast", "climb_checker", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
 ground_cast = NodePath("Body/Ground Cast")
 climb_checker = NodePath("Body/Climb Checker")
 max_stamina = 30.0
-climb_speed = 1.5
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
@@ -128,6 +127,7 @@ transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.999
 top_level = true
 attributes = SubResource("CameraAttributesPractical_t5o4e")
 h_offset = 1.5
+current = true
 fov = 84.117065
 
 [node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]

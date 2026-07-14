@@ -63,7 +63,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.637533, 0)
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, 5.210508, 2.0897267)
 
 [node name="Inventory Item" parent="." unique_id=148709383 instance=ExtResource("4_fo5ed")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2773745, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2773745, 8)
 ID = "Item Test"
 
 [node name="Climbing Wall" type="StaticBody3D" parent="." unique_id=649051369 groups=["Climbable"]]
@@ -77,8 +77,24 @@ surface_material_override/0 = SubResource("StandardMaterial3D_pvk8e")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Climbing Wall" unique_id=1608959201]
 shape = SubResource("BoxShape3D_fo5ed")
 
+[node name="Climbing Wall2" type="StaticBody3D" parent="." unique_id=30211915 groups=["Climbable"]]
+transform = Transform3D(-4.371139e-08, 0, -10.7, 0, 11.625001, 0, 1, 0, -4.6771186e-07, -8, 5.4846616, 0)
+collision_layer = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Climbing Wall2" unique_id=103191675]
+mesh = SubResource("BoxMesh_8j60k")
+surface_material_override/0 = SubResource("StandardMaterial3D_pvk8e")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Climbing Wall2" unique_id=475039242]
+shape = SubResource("BoxShape3D_fo5ed")
+
 [node name="Door" parent="." unique_id=127991376 instance=ExtResource("5_fo5ed")]
-transform = Transform3D(2, 0, 0, 0, 4, 0, 0, 0, 0.1, -7.494251, 0, -5.113329)
+transform = Transform3D(-8.742278e-08, 0, 0.1, 0, 4, 0, -2, 0, -4.371139e-09, -2.7099938, 0, -0.489995)
+locked = true
+
+[node name="Lock Picking" parent="Door" index="2" unique_id=1098444103]
+safety = 5.0
 
 [editable path="Mountains"]
 [editable path="Player Controller"]
+[editable path="Door"]

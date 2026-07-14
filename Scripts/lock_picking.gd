@@ -60,7 +60,7 @@ func _handle_solver():
 				lock_background.rotation -=  get_process_delta_time() * solve_speed
 			else:
 				lock_background.rotation = deg_to_rad(-90)
-			solved = true
+				solved = true
 			#success
 		else:
 			##variable to represent how long the lock will solve for before failing

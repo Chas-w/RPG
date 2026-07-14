@@ -5,7 +5,7 @@ extends Node3D
 @export var ground_cast : RayCast3D
 @export var climb_checker : RayCast3D
 @export var max_stamina : float
-@export var climb_speed = .2
+@export var climb_speed = 3
 var grounded
 var stamina
 var stamina_fully_recovered : bool
@@ -25,6 +25,7 @@ var recovery_buffer
 var speed
 var input_dir 
 var direction 
+var climb_dir
 #basic move variables
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
@@ -72,19 +73,24 @@ enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():
-	recovery_buffer = stamina_recovery_buffer_max
-	speed = WALK_SPEED
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
 	database.access_player = self
-	max_stamina = database.stamina_bar.max_value
-	stamina = max_stamina
 	status_dictionary = database._JSON_to_dictionary(database.player_status_path)
 	inventory_dictionary = database._JSON_to_dictionary(database.player_inventory_path)
+	_load_in()
+
+func _load_in():
+	recovery_buffer = stamina_recovery_buffer_max
+	speed = WALK_SPEED
+	max_stamina = database.stamina_bar.max_value
+	stamina = max_stamina
 	health = status_dictionary.Health
 	morality = status_dictionary.Morality
 	autosave_timer = time_to_autosave_max
-
+	
+	#spawn location
+	position = Vector3(status_dictionary.Position[0],status_dictionary.Position[1],status_dictionary.Position[2])
 func _process(delta):
 	#ground check
 	grounded = ground_cast.is_colliding()
@@ -102,11 +108,11 @@ func _process(delta):
 		_handle_autosave()
 	
 	#handle move check
-	if (!database.pause_game):
+	if (!database.pause_game && move_state != Move_State.Null):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+		climb_dir = (player_body.transform.basis * Vector3(input_dir.x, input_dir.y, 0)).normalized()
 		_handle_adding_inventory()
-		
 		#gun and zoom
 		if (!climbing):
 			if (Input.is_action_just_pressed("gun")):
@@ -129,14 +135,14 @@ func _process(delta):
 	
 		#climbing behavior
 		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
-			if(Input.is_action_pressed("jump")):
+			if(Input.is_action_pressed("sprint")):
 				_set_move_state(Move_State.Climbing)
 
 func _physics_process(delta):
 	#rotation
 	_body_rotation()
 	# jump
-	if(Input.is_action_just_pressed("jump") && player_body.linear_velocity.y <= 0):
+	if(Input.is_action_just_pressed("jump") && player_body.linear_velocity.y <= 0 && !climbing && move_state != Move_State.Null):
 		player_body.linear_velocity.y += JUMP_VELOCITY * 45 * delta
 	#visual 
 	lower_body_visual.global_position = player_body.global_position #only when the rotation has reached a certain edge
@@ -154,7 +160,7 @@ func _physics_process(delta):
 		player_body.linear_velocity = Vector3.ZERO
 
 func _input(event: InputEvent) -> void:
-	if (!database.pause_game):
+	if (!database.pause_game && move_state != Move_State.Null):
 		if event is InputEventMouseMotion:
 			cam_origin.rotation.x -= event.relative.y * SENSITIVITY
 			# Prevent the camera from rotating too far up or down.
@@ -238,19 +244,21 @@ func _body_rotation():
 
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
-	if (Input.is_action_pressed("jump") && stamina > 0):
+	if (Input.is_action_pressed("sprint") && stamina > 0):
 		#will likely need to change later
 		climbing = true
-		player_body.freeze = true
-		if direction:
-			stamina -= climb_effort * get_process_delta_time()
-			#idk why this is working but it is
-			player_body.position.y -= direction.x * climb_speed * get_process_delta_time()  
-			player_body.position.z += direction.z * climb_speed * get_process_delta_time()
+		player_body.gravity_scale = 0
+		if climb_dir:
+			#stamina -= climb_effort * get_process_delta_time()
+			#this isn't working properly
+			player_body.linear_velocity.y = -climb_dir.y * climb_speed 
+			player_body.linear_velocity.x = climb_dir.x * climb_speed 
 		else:
+			player_body.linear_velocity.y = 0
+			player_body.linear_velocity.x = 0
 			stamina -= climb_effort/4 * get_process_delta_time() 
 		#pull self to top of structure if at the top
-	if(!Input.is_action_pressed("jump") || stamina <= 0 || !climb_checker.is_colliding()):
+	if(!Input.is_action_pressed("sprint") || stamina <= 0 || !climb_checker.is_colliding()):
 		#jump AWAY from wall when jump is released
 		_set_move_state(Move_State.Idle)
 
@@ -292,7 +300,7 @@ func _set_move_state(next_move_state:int):
 	match(prev_move_state):
 		Move_State.Climbing:
 			climbing = false
-			player_body.freeze = false
+			player_body.gravity_scale = 2
 		pass
 	#check upcoming state
 	match(next_move_state):
@@ -316,9 +324,9 @@ func _update_JSON_data():
 	status_dictionary.Health = health
 	status_dictionary.Morality = morality
 	
-	status_dictionary.Position[0] = global_position.x
-	status_dictionary.Position[1] = global_position.y
-	status_dictionary.Position[2] = global_position.z
+	status_dictionary.Position[0] = player_body.global_position.x
+	status_dictionary.Position[1] = player_body.global_position.y
+	status_dictionary.Position[2] = player_body.global_position.z
 	
 	database._save_JSON_file(database.player_status_path, status_dictionary)
 	database._save_JSON_file(database.player_inventory_path, inventory_dictionary)

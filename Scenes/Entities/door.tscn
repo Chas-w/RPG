@@ -13,10 +13,11 @@ albedo_color = Color(0, 1, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dyyqa"]
 
-[node name="Door" type="Node3D" unique_id=127991376 node_paths=PackedStringArray("lock_picking")]
+[node name="Door" type="Node3D" unique_id=127991376 node_paths=PackedStringArray("lock_picking", "barrier")]
 transform = Transform3D(2, 0, 0, 0, 4, 0, 0, 0, 0.1, 0, 0, 0)
 script = ExtResource("1_nuxhq")
 lock_picking = NodePath("Lock Picking")
+barrier = NodePath("Static/CollisionShape3D")
 
 [node name="Open Trigger" type="Area3D" parent="." unique_id=482437491]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5024343, 0.5080928, 0)
