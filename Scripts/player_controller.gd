@@ -13,7 +13,7 @@ var stamina_fully_depleated : bool
 var climbing : bool 
 var sprinting : bool
 ##how much stamina is affected by climbing
-var climb_effort = 10
+var climb_effort = 3
 ##how much running affects stamina
 var run_effort = 5
 ##how much stamina recovers by
@@ -171,7 +171,7 @@ func _handle_stamina():
 		#stamina
 	database.stamina_bar.value = stamina
 	if (!stamina_fully_depleated):
-		if (grounded && !climbing && !sprinting && stamina <= max_stamina || player_body.linear_velocity == Vector3.ZERO):
+		if (grounded && !climbing && !sprinting && stamina < max_stamina):
 			if(recovery_buffer >= 0):
 				recovery_buffer -= get_process_delta_time()
 			else:
@@ -260,7 +260,7 @@ func _handle_climbing():
 			player_body.linear_velocity.y = 0
 			player_body.linear_velocity.x = 0
 			player_body.linear_velocity.z = 0
-			stamina -= climb_effort/4 * get_process_delta_time() 
+			stamina -= climb_effort/2 * get_process_delta_time() 
 		#pull self to top of structure if at the top
 	if(!Input.is_action_pressed("sprint") || stamina <= 0 || !climb_checker.is_colliding()):
 		#jump AWAY from wall when jump is released
