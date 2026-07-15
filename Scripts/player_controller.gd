@@ -107,9 +107,6 @@ func _process(delta):
 	if (database.autosave_enabled):
 		_handle_autosave()
 		
-	if(Input.is_action_just_pressed("interact")):
-		player_body.position.x += 1
-		player_body.position *= player_body.transform.basis.x
 	#handle move check
 	if (!database.pause_game && move_state != Move_State.Null):
 		input_dir = Input.get_vector("left", "right", "up", "down")
@@ -143,8 +140,10 @@ func _physics_process(delta):
 	#rotation
 	_body_rotation()
 	# jump
-	if(Input.is_action_just_pressed("jump") && player_body.linear_velocity.y <= 0 && !climbing && move_state != Move_State.Null):
+	if(Input.is_action_just_pressed("jump") && grounded && !climbing && move_state != Move_State.Null):
 		player_body.linear_velocity.y += JUMP_VELOCITY * 45 * delta
+	else:
+		player_body.gravity_scale = 2
 	#visual 
 	lower_body_visual.global_position = player_body.global_position #only when the rotation has reached a certain edge
 	
