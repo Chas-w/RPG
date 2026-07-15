@@ -46,6 +46,8 @@ func _ready():
 func _process(delta):
 	_handle_pick_rotation()
 	_handle_solver()
+	
+		
 	if (break_pick):
 		_handle_break_pick()
 

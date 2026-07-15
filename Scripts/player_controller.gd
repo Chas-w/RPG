@@ -106,7 +106,10 @@ func _process(delta):
 		database.saving = false
 	if (database.autosave_enabled):
 		_handle_autosave()
-	
+		
+	if(Input.is_action_just_pressed("interact")):
+		player_body.position.x += 1
+		player_body.position *= player_body.transform.basis.x
 	#handle move check
 	if (!database.pause_game && move_state != Move_State.Null):
 		input_dir = Input.get_vector("left", "right", "up", "down")
@@ -123,8 +126,6 @@ func _process(delta):
 			cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
 			gun.visible = false
 			inventory_dictionary.Permanent.Gun.Active = false
-
-
 			
 		#camera
 		_handle_follow_cam(delta)
@@ -249,18 +250,23 @@ func _handle_climbing():
 		climbing = true
 		player_body.gravity_scale = 0
 		if climb_dir:
-			#stamina -= climb_effort * get_process_delta_time()
-			#this isn't working properly
+			stamina -= climb_effort * get_process_delta_time()
 			player_body.linear_velocity.y = -climb_dir.y * climb_speed 
-			player_body.linear_velocity.x = climb_dir.x * climb_speed 
+			#messy way of doing relative movement bc the normal way wasn't working
+			if(absf(climb_dir.x) > .95):
+				player_body.linear_velocity.x = direction.x *  climb_speed
+			if(absf(climb_dir.z) > .95):
+				player_body.linear_velocity.z = direction.z * climb_speed
 		else:
 			player_body.linear_velocity.y = 0
 			player_body.linear_velocity.x = 0
+			player_body.linear_velocity.z = 0
 			stamina -= climb_effort/4 * get_process_delta_time() 
 		#pull self to top of structure if at the top
 	if(!Input.is_action_pressed("sprint") || stamina <= 0 || !climb_checker.is_colliding()):
 		#jump AWAY from wall when jump is released
 		_set_move_state(Move_State.Idle)
+
 
 func _handle_zoom(delta):
 	if(Input.is_action_pressed("zoom")):

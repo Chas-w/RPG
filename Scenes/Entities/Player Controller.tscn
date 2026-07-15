@@ -87,6 +87,7 @@ mass = 90.0
 gravity_scale = 2.0
 can_sleep = false
 lock_rotation = true
+freeze_mode = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player Body" unique_id=252550095]
 shape = SubResource("CapsuleShape3D_8j60k")
