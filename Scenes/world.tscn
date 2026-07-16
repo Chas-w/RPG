@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cs5uw5ng78niv" path="res://Scenes/Entities/Player Controller.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://d273rn50d72ke" path="res://Scenes/Entities/inventory_item.tscn" id="4_fo5ed"]
 [ext_resource type="PackedScene" uid="uid://baoaywlbjf36" path="res://Scenes/Entities/door.tscn" id="5_fo5ed"]
+[ext_resource type="PackedScene" uid="uid://bmrx547rjk0ma" path="res://Scenes/Entities/mount.tscn" id="6_5ukr8"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5a7ea"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -59,7 +60,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.128204, -24.777134, -28.4
 [node name="Player Controller" parent="." unique_id=1135922991 instance=ExtResource("4_8j60k")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.637533, 0)
 
-[node name="Camera" parent="Player Controller" index="3" unique_id=959619856]
+[node name="Camera" parent="Player Controller" index="0" unique_id=959619856]
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, 5.210508, 2.0897267)
 
 [node name="Inventory Item" parent="." unique_id=148709383 instance=ExtResource("4_fo5ed")]
@@ -94,6 +95,9 @@ locked = true
 
 [node name="Lock Picking" parent="Door" index="2" unique_id=1098444103]
 safety = 5.0
+
+[node name="Mount" parent="." unique_id=1430646126 instance=ExtResource("6_5ukr8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.727285, 0.52778625, -7.412154)
 
 [editable path="Mountains"]
 [editable path="Player Controller"]

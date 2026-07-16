@@ -30,16 +30,26 @@ var climb_dir
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 const JUMP_VELOCITY = 8
-const SENSITIVITY = 0.0004
+var sens = 0.0004
+var mount_sens = .0003
+var default_sens =  0.0004
 #fov variables
 const DEFAULT_FOV = 75.0
 const ZOOM_FOV = 50
 const SPRINT_FOV = 100
 
+@export_category("Collisions")
+@export var body_collision : CollisionShape3D
+
 @export_category("Camera")
 @export var cam : Camera3D
 @export var default_cam : PhantomCamera3D
 @export var zoom_cam : PhantomCamera3D
+@export var mount_cam : PhantomCamera3D
+var default_H_offset  = 1.5
+var default_FOV = 84.1
+var default_near = .05
+var default_far = 4000
 #center of teh camera view
 @export var center_point : Marker3D
 ##how long it takes each axis to follow the player
@@ -67,7 +77,7 @@ var time_to_autosave_max = 600
 var autosave_timer
 
 @export_category("States")
-enum Move_State{Idle,Moving,Climbing,Null}
+enum Move_State{Idle,Moving,Climbing,Mounted, Null}
 @export var move_state : Move_State = Move_State.Idle
 enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
 @export var interact_state : Interact_State = Interact_State.Null
@@ -114,11 +124,10 @@ func _process(delta):
 		climb_dir = (player_body.transform.basis * Vector3(input_dir.x, input_dir.y, 0)).normalized()
 		_handle_adding_inventory()
 		#gun and zoom
-		if (!climbing):
+		if (!climbing && move_state != Move_State.Mounted):
 			if (Input.is_action_just_pressed("gun")):
 				inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
 				gun.visible = !gun.visible
-			_handle_zoom(delta)
 		else:
 			cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
 			gun.visible = false
@@ -126,14 +135,14 @@ func _process(delta):
 			
 		#camera
 		_handle_follow_cam(delta)
-		
+		_handle_zoom(delta)
 		#set up moving
 		if(direction && move_state != Move_State.Moving && !climbing && grounded):
 			_set_move_state(Move_State.Moving)
 	
 		#climbing behavior
 		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
-			if(Input.is_action_pressed("sprint")):
+			if(Input.is_action_pressed("sprint") && move_state != Move_State.Mounted):
 				_set_move_state(Move_State.Climbing)
 
 func _physics_process(delta):
@@ -162,10 +171,10 @@ func _physics_process(delta):
 func _input(event: InputEvent) -> void:
 	if (!database.pause_game && move_state != Move_State.Null):
 		if event is InputEventMouseMotion:
-			cam_origin.rotation.x -= event.relative.y * SENSITIVITY
+			cam_origin.rotation.x -= event.relative.y * sens
 			# Prevent the camera from rotating too far up or down.
 			cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
-			cam_origin.rotation.y += -event.relative.x * SENSITIVITY
+			cam_origin.rotation.y += -event.relative.x * sens
 
 func _handle_stamina():
 		#stamina
@@ -306,11 +315,27 @@ func _set_move_state(next_move_state:int):
 		Move_State.Climbing:
 			climbing = false
 			player_body.gravity_scale = 2
-		pass
+		Move_State.Mounted:
+			player_body.freeze = false
+			body_collision.disabled = false
+			mount_cam.priority = 0
+			default_cam.priority = 10
+			cam.h_offset = default_H_offset
+			sens = default_sens
+			print("PLAYER DISMOUNTED")
 	#check upcoming state
 	match(next_move_state):
 		Move_State.Moving:
 			pass
+		Move_State.Mounted:
+			body_collision.disabled = true
+			player_body.freeze = true
+			mount_cam.priority = 10
+			default_cam.priority = 0
+			cam.h_offset = 0
+			sens = mount_sens
+			print("PLAYER MOUNTED")
+
 
 func _set_interact_state(next_interact_state:int):
 	var prev_interact_state := interact_state

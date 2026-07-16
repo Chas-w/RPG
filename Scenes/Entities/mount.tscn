@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://bmrx547rjk0ma"]
+
+[ext_resource type="Script" uid="uid://cmfbekqaacu4p" path="res://Scripts/mount_behavior.gd" id="1_3eq2p"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3eq2p"]
+radius = 0.45117188
+height = 3.5620117
+
+[sub_resource type="BoxMesh" id="BoxMesh_dyyqa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jh8qj"]
+albedo_color = Color(0, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_oqlhh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o4uhr"]
+albedo_color = Color(1, 0, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dyyqa"]
+size = Vector3(1, 1.527832, 1)
+
+[node name="Mount" type="RigidBody3D" unique_id=1430646126 node_paths=PackedStringArray("mount_location", "dismount_location", "interact_prompt")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+can_sleep = false
+lock_rotation = true
+freeze_mode = 1
+script = ExtResource("1_3eq2p")
+mount_location = NodePath("Mount Location")
+dismount_location = NodePath("Dismount Location")
+interact_prompt = NodePath("Interact Prompt")
+mount_default_speed = 10.0
+mount_sprint_speed = 15.0
+max_stamina = 50.0
+effort = 5.0
+
+[node name="Dismount Location" type="Marker3D" parent="." unique_id=2142243303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8285468, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=527205810]
+transform = Transform3D(-4.3711385e-08, -4.371139e-08, 1, -1, 0, -4.371139e-08, 0, -1, -4.371139e-08, 0.07885742, -3.4469672e-09, 0)
+shape = SubResource("CapsuleShape3D_3eq2p")
+debug_color = Color(0.91057897, 0.000108005406, 0.7312848, 0.41960785)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=1530899092]
+transform = Transform3D(-1.3113416e-07, -1, 0, 3, -4.371139e-08, 0, 0, 0, 1, 2.220446e-16, -0.07885742, 0)
+mesh = SubResource("BoxMesh_dyyqa")
+surface_material_override/0 = SubResource("StandardMaterial3D_jh8qj")
+
+[node name="Mount Location" type="Marker3D" parent="." unique_id=2034141928]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.82236385, 0)
+gizmo_extents = 2.74
+
+[node name="Saddle" type="MeshInstance3D" parent="Mount Location" unique_id=1469653837]
+transform = Transform3D(0.39848667, 0, 0, 0, 0.34984028, 0, 0, 0, 1.1552535, 0, -0.45501888, 0)
+mesh = SubResource("BoxMesh_oqlhh")
+surface_material_override/0 = SubResource("StandardMaterial3D_o4uhr")
+
+[node name="Mount Trigger" type="Area3D" parent="Mount Location" unique_id=868292544]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Mount Location/Mount Trigger" unique_id=1548872695]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2.2937994, 0, -0.26391602, 0)
+shape = SubResource("BoxShape3D_dyyqa")
+
+[node name="Interact Prompt" type="Label3D" parent="." unique_id=361321992]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5662317, 0)
+billboard = 1
+
+[connection signal="body_entered" from="Mount Location/Mount Trigger" to="." method="_on_mount_trigger_body_entered"]
+[connection signal="body_exited" from="Mount Location/Mount Trigger" to="." method="_on_mount_trigger_body_exited"]

@@ -5,6 +5,10 @@
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_t5o4e"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_f4b76"]
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_t5o4e"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 200.0
+
 [sub_resource type="Resource" id="Resource_rlble"]
 script = ExtResource("2_t5o4e")
 duration = 0.5
@@ -28,20 +32,18 @@ albedo_texture = SubResource("NoiseTexture2D_ssgyw")
 
 [sub_resource type="BoxMesh" id="BoxMesh_mepjo"]
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_t5o4e"]
-dof_blur_far_enabled = true
-dof_blur_far_distance = 200.0
-
-[node name="Player Controller" type="Node3D" unique_id=1667299940 node_paths=PackedStringArray("player_body", "lower_body_visual", "ground_cast", "climb_checker", "cam", "default_cam", "zoom_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
+[node name="Player Controller" type="Node3D" unique_id=1667299940 node_paths=PackedStringArray("player_body", "lower_body_visual", "ground_cast", "climb_checker", "body_collision", "cam", "default_cam", "zoom_cam", "mount_cam", "center_point", "cam_origin", "zoomed_origin", "gun") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
 player_body = NodePath("Player Body")
 lower_body_visual = NodePath("Body")
 ground_cast = NodePath("Body/Ground Cast")
 climb_checker = NodePath("Body/Climb Checker")
 max_stamina = 30.0
+body_collision = NodePath("Player Body/CollisionShape3D")
 cam = NodePath("Camera")
 default_cam = NodePath("Cam Origin/SpringArm3D/Default Cam")
 zoom_cam = NodePath("Player Body/UpperBody/Zoomed Origin/SpringArm3D2/Close Cam")
+mount_cam = NodePath("Cam Origin/SpringArm3D/Mount Cam")
 center_point = NodePath("Player Body/Center Point")
 follow_buffer = Vector4(0.1, 1, 5, 0.5)
 cam_follow_weight = 8.0
@@ -49,6 +51,20 @@ cam_origin = NodePath("Cam Origin")
 zoomed_origin = NodePath("Player Body/UpperBody/Zoomed Origin")
 rotation_buffer = 5.0
 gun = NodePath("Player Body/UpperBody/Zoomed Origin/Gun")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=959619856]
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
+top_level = true
+attributes = SubResource("CameraAttributesPractical_t5o4e")
+h_offset = 1.5
+current = true
+fov = 84.117065
+
+[node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("4_f4b76")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="Cam Origin" type="Node3D" parent="." unique_id=1716167983]
 transform = Transform3D(1, 0, 0, 0, 0.99939084, 0.034899496, 0, -0.034899496, 0.99939084, -1.5, -0.5, 0)
@@ -62,6 +78,15 @@ spring_length = 4.0
 transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04, 0, 2.091)
 script = ExtResource("1_pvk8e")
 priority = 10
+tween_resource = SubResource("Resource_rlble")
+follow_damping = true
+follow_distance = 3.0
+spring_length = 3.0
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
+
+[node name="Mount Cam" type="Node3D" parent="Cam Origin/SpringArm3D" unique_id=2037963976]
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.04, 0, 2.091)
+script = ExtResource("1_pvk8e")
 tween_resource = SubResource("Resource_rlble")
 follow_damping = true
 follow_distance = 3.0
@@ -87,7 +112,6 @@ mass = 90.0
 gravity_scale = 2.0
 can_sleep = false
 lock_rotation = true
-freeze_mode = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player Body" unique_id=252550095]
 shape = SubResource("CapsuleShape3D_8j60k")
@@ -122,17 +146,3 @@ collision_mask = 2
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
 transform = Transform3D(1, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000002, 0, 0.9685745, 0)
-
-[node name="Camera" type="Camera3D" parent="." unique_id=959619856]
-transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
-top_level = true
-attributes = SubResource("CameraAttributesPractical_t5o4e")
-h_offset = 1.5
-current = true
-fov = 84.117065
-
-[node name="PhantomCameraHost" type="Node" parent="Camera" unique_id=1412045122]
-process_priority = 300
-process_physics_priority = 300
-script = ExtResource("4_f4b76")
-metadata/_custom_type_script = "uid://bd046eokvcnu2"
