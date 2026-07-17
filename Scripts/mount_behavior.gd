@@ -122,7 +122,9 @@ func _set_mount_state(next_state:int):
 func _on_mount_trigger_body_entered(body):
 	if (body.is_in_group("Player")):
 		can_mount = true
+		interact_prompt.visible = true
 
 func _on_mount_trigger_body_exited(body):
 	if (body.is_in_group("Player")):
 		can_mount = false
+		interact_prompt.visible = false
