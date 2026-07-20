@@ -46,6 +46,7 @@ const SPRINT_FOV = 100
 @export var default_cam : PhantomCamera3D
 @export var zoom_cam : PhantomCamera3D
 @export var mount_cam : PhantomCamera3D
+var controller_vector 
 var default_H_offset  = 1.5
 var default_FOV = 84.1
 var default_near = .05
@@ -105,6 +106,11 @@ func _process(delta):
 	#ground check
 	grounded = ground_cast.is_colliding()
 	
+	#clamp_cam
+	cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
+	if (!database.pause_game && move_state != Move_State.Null):
+		if(database.controller_used):
+			_handle_controller_cam(delta)
 	#stamina
 	_handle_stamina()
 	
@@ -170,11 +176,15 @@ func _physics_process(delta):
 
 func _input(event: InputEvent) -> void:
 	if (!database.pause_game && move_state != Move_State.Null):
-		if event is InputEventMouseMotion:
+		if event is InputEventMouseMotion and !database.controller_used:
 			cam_origin.rotation.x -= event.relative.y * sens
-			# Prevent the camera from rotating too far up or down.
-			cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
 			cam_origin.rotation.y += -event.relative.x * sens
+
+func _handle_controller_cam(delta):
+	controller_vector = Input.get_vector("cam_right","cam_left","cam_up","cam_down")
+	if (controller_vector.length() >= .2):
+		cam_origin.rotation.x -= controller_vector.y  * delta
+		cam_origin.rotation.y += controller_vector.x  * delta
 
 func _handle_stamina():
 		#stamina

@@ -64,7 +64,6 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	
 	if (mounted):
 		rotation.y = player.lower_body_visual.rotation.y
 		match(mount_state):
@@ -73,6 +72,7 @@ func _physics_process(delta):
 			Mount_State.Moving:
 				_handle_mount_movement()
 				pass
+
 func _handle_mount_movement():
 	if (Input.is_action_pressed("sprint") && stamina > 0 && !stamina_fully_depleated):
 		mount_speed = mount_sprint_speed
@@ -83,7 +83,7 @@ func _handle_mount_movement():
 		mount_speed = mount_default_speed
 	# Get the input direction and handle the movement/deceleration.
 	if player.direction:
-		if(player.input_dir.x):
+		if(absf(player.input_dir.x) >= .96):
 			mount_speed = strafe_speed
 		else:
 			mount_speed = mount_default_speed

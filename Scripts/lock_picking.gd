@@ -33,8 +33,12 @@ var solve_speed = 1
 var solving : bool
 var reset : bool 
 var solved : bool 
+var database
+var controller_vector
 
 func _ready(): 
+	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
+		database = game_obj
 	##setup
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	#set a random rotation for the solution
@@ -46,7 +50,14 @@ func _ready():
 func _process(delta):
 	_handle_pick_rotation()
 	_handle_solver()
-	
+	if(database.controller_used):
+		controller_vector = Input.get_vector("cam_right","cam_left","cam_up","cam_down")
+		mouse_speed = absf(controller_vector.x) * 20
+		move_pick = true
+		if(controller_vector.x < 0):
+			higher = true
+		else:
+			higher = false
 		
 	if (break_pick):
 		_handle_break_pick()
@@ -123,10 +134,11 @@ func _get_angle(vec1 : Vector2, vec2 : Vector2, vec3 : Vector2):
 	return rad_to_deg(acos(calculation)) 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
-		mouse_speed = absf(event.relative.x)
-		move_pick = true
-		if(event.relative.x > 0):
-			higher = true
-		else:
-			higher = false
+	if(!database.controller_used):
+		if event is InputEventMouseMotion:
+			mouse_speed = absf(event.relative.x)
+			move_pick = true
+			if(event.relative.x > 0):
+				higher = true
+			else:
+				higher = false
