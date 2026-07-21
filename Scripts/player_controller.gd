@@ -257,7 +257,7 @@ func _handle_movement():
 		_set_move_state(Move_State.Idle)
 
 func _body_rotation():
-	if(move_state != Move_State.Idle):
+	if(move_state != Move_State.Idle || gun.visible):
 		#top rotation
 		#player_body.rotation.y = cam_origin.rotation.y
 		player_body.rotation.y = lerp_angle(player_body.rotation.y,cam_origin.rotation.y, 15 * get_process_delta_time())
