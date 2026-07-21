@@ -150,7 +150,9 @@ func _process(delta):
 		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
 			if(Input.is_action_pressed("sprint") && move_state != Move_State.Mounted):
 				_set_move_state(Move_State.Climbing)
-
+				
+				
+				
 func _physics_process(delta):
 	#rotation
 	_body_rotation()
@@ -255,11 +257,13 @@ func _handle_movement():
 		_set_move_state(Move_State.Idle)
 
 func _body_rotation():
-	#top rotation
-	player_body.rotation.y = cam_origin.rotation.y
-	#lower rotation
-	if (!climbing):
-		lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
+	if(move_state != Move_State.Idle):
+		#top rotation
+		#player_body.rotation.y = cam_origin.rotation.y
+		player_body.rotation.y = lerp_angle(player_body.rotation.y,cam_origin.rotation.y, 15 * get_process_delta_time())
+		#lower rotation
+		if (!climbing):
+			lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
 
 func _handle_climbing():
 	# Get the input direction and handle the movement/deceleration.
