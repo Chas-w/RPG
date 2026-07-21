@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://c0y5sdmnalgnx"
-path="res://.godot/imported/X Bot.fbx-bb880a3bad3571a42c0e48961a99bcc3.scn"
+uid="uid://cv25npjd21gxs"
+path="res://.godot/imported/Horse is Here.fbx-d9e9c1c443e1c2d338bf0c25f3f686fb.scn"
 
 [deps]
 
-source_file="res://Imports/Mesh/X Bot.fbx"
-dest_files=["res://.godot/imported/X Bot.fbx-bb880a3bad3571a42c0e48961a99bcc3.scn"]
+source_file="res://Imports/Mesh/Temp/Horse is Here.fbx"
+dest_files=["res://.godot/imported/Horse is Here.fbx-d9e9c1c443e1c2d338bf0c25f3f686fb.scn"]
 
 [params]
 

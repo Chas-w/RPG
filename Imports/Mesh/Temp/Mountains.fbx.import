@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://dfban5mvvjrv7"
-path="res://.godot/imported/Mountains.fbx-6c0e2052855adeb4c1c9665b9ad5dc58.scn"
+path="res://.godot/imported/Mountains.fbx-5854fa29381a17da29ed183fb74d81eb.scn"
 
 [deps]
 
-source_file="res://Imports/Mesh/Mountains.fbx"
-dest_files=["res://.godot/imported/Mountains.fbx-6c0e2052855adeb4c1c9665b9ad5dc58.scn"]
+source_file="res://Imports/Mesh/Temp/Mountains.fbx"
+dest_files=["res://.godot/imported/Mountains.fbx-5854fa29381a17da29ed183fb74d81eb.scn"]
 
 [params]
 
