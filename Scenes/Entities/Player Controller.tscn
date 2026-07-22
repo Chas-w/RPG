@@ -22,11 +22,10 @@ shader_parameter/quantization_level = 16
 size = Vector3(100, 100, 100)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_28aqh"]
-resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("8_no5jg")
 shader_parameter/sensitivity = 3.0
-shader_parameter/outline_thickness = 2.0
+shader_parameter/outline_thickness = 0.1999999955296
 shader_parameter/step_threshold = 0.03999999910592
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 
