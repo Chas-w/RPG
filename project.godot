@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="RPG"
+config/name="Orpheum"
 run/main_scene="uid://det1ev86alinb"
 config/features=PackedStringArray("4.7", "Forward Plus")
 

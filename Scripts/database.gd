@@ -1,5 +1,10 @@
 extends Node
 
+@export var cam : Camera3D
+var zoomed : bool
+var DEFAULT_FOV :=  75.0
+var ZOOMED_FOV := 50.0
+
 var player_status_path = "res://DATA/STATUS.json"
 var player_inventory_path = "res://DATA/INVENTORY.json"
 @export var autosave_enabled : bool
@@ -18,7 +23,6 @@ var open_inventory : bool
 @export var inventory : Button
 @export var options : Button
 @export var exit_game : Button
-@export var stamina_bar : ProgressBar
 var saving : bool
 var pause_game : bool
 var access_player : Node3D
@@ -35,6 +39,7 @@ func _input(event: InputEvent) -> void:
 		pause_game = !pause_game
 	if event is InputEventMouseMotion:
 		controller_used = false
+
 
 
 
@@ -58,6 +63,17 @@ func _process(delta):
 
 	if(Input.is_action_just_pressed("cam_down") || Input.is_action_just_pressed("cam_up") || Input.is_action_just_pressed("cam_left") || Input.is_action_just_pressed("cam_right")):
 		controller_used = true
+
+func _handle_zoom(delta):
+	if(Input.is_action_pressed("zoom")):
+		cam.fov = lerpf(cam.fov, ZOOMED_FOV, delta * 2)
+		if(!zoomed):
+			zoomed = true
+	else:
+		cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
+		if(zoomed):
+			zoomed = false
+
 func _JSON_to_dictionary(data_path:String): #returns true if JSON contains key
 	var file = FileAccess.get_file_as_string(data_path)
 	var dict = JSON.parse_string(file)

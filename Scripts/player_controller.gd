@@ -7,21 +7,7 @@ extends Node3D
 @export var max_stamina : float
 @export var climb_speed = 3
 var grounded
-var stamina
-var stamina_fully_recovered : bool
-var stamina_fully_depleated : bool
 var climbing : bool 
-var sprinting : bool
-##how much stamina is affected by climbing
-var climb_effort = 3
-##how much running affects stamina
-var run_effort = 5
-##how much stamina recovers by
-var stamina_recovery = 10
-##how much time before stamina starts recovering
-var stamina_recovery_buffer_max = 1
-var recovery_buffer
-
 var speed
 var input_dir 
 var direction 
@@ -31,44 +17,15 @@ const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 const JUMP_VELOCITY = 8
 var sens = 0.0004
-var mount_sens = .0003
 var default_sens =  0.0004
-#fov variables
-const DEFAULT_FOV = 75.0
-const ZOOM_FOV = 50
-const SPRINT_FOV = 100
 
 @export_category("Collisions")
 @export var body_collision : CollisionShape3D
 
-@export_category("Camera")
-@export var cam : Camera3D
-@export var default_cam : PhantomCamera3D
-@export var zoom_cam : PhantomCamera3D
-@export var mount_cam : PhantomCamera3D
-var controller_vector 
-var default_H_offset  = 1.5
-var default_FOV = 84.1
-var default_near = .05
-var default_far = 4000
-#center of teh camera view
-@export var center_point : Marker3D
-##how long it takes each axis to follow the player
-@export var follow_buffer: Vector4
-##how accurate the camera follow is
-@export var cam_follow_weight : float
-##origin point of the default camera
-@export var cam_origin : Node3D
-##origin point of the aiming camera
-@export var zoomed_origin : Node3D
-##how long it takes the lower body to match rotation
-@export var rotation_buffer : float
-var zoomed : bool
 
 @export_category("Player Data Info")
 @export var health : float
 @export var morality : float
-@export var gun : MeshInstance3D
 var target_item : Node3D
 var can_pickup : bool 
 var status_dictionary
@@ -78,9 +35,9 @@ var time_to_autosave_max = 600
 var autosave_timer
 
 @export_category("States")
-enum Move_State{Idle,Moving,Climbing,Mounted, Null}
+enum Move_State{Idle,Moving,Climbing, Null}
 @export var move_state : Move_State = Move_State.Idle
-enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Minigame, Null}
+enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Other_View, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():
@@ -92,12 +49,8 @@ func _ready():
 	_load_in()
 
 func _load_in():
-	recovery_buffer = stamina_recovery_buffer_max
 	speed = WALK_SPEED
-	max_stamina = database.stamina_bar.max_value
-	stamina = max_stamina
 	health = status_dictionary.Health
-	morality = status_dictionary.Morality
 	autosave_timer = time_to_autosave_max
 	
 	#spawn location
@@ -105,15 +58,6 @@ func _load_in():
 func _process(delta):
 	#ground check
 	grounded = ground_cast.is_colliding()
-	
-	#clamp_cam
-	cam_origin.rotation.x = clampf(cam_origin.rotation.x, deg_to_rad(-70), deg_to_rad(70))
-	if (!database.pause_game && move_state != Move_State.Null):
-		if(database.controller_used):
-			_handle_controller_cam(delta)
-	#stamina
-	_handle_stamina()
-	
 	#save game behavior
 	if (database.saving):
 		_update_JSON_data()
@@ -129,30 +73,10 @@ func _process(delta):
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 		climb_dir = (player_body.transform.basis * Vector3(input_dir.x, input_dir.y, 0)).normalized()
 		_handle_adding_inventory()
-		#gun and zoom
-		if (!climbing && move_state != Move_State.Mounted):
-			if (Input.is_action_just_pressed("gun")):
-				inventory_dictionary.Permanent.Gun.Active = !inventory_dictionary.Permanent.Gun.Active
-				gun.visible = !gun.visible
-		else:
-			cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
-			gun.visible = false
-			inventory_dictionary.Permanent.Gun.Active = false
-			
-		#camera
-		_handle_follow_cam(delta)
-		_handle_zoom(delta)
-		#set up moving
 		if(direction && move_state != Move_State.Moving && !climbing && grounded):
 			_set_move_state(Move_State.Moving)
-	
-		#climbing behavior
-		if(database._check_raycast(climb_checker,"Climbable") && move_state != Move_State.Climbing && !climbing):
-			if(Input.is_action_pressed("sprint") && move_state != Move_State.Mounted):
-				_set_move_state(Move_State.Climbing)
-				
-				
-				
+
+
 func _physics_process(delta):
 	#rotation
 	_body_rotation()
@@ -169,51 +93,9 @@ func _physics_process(delta):
 		Move_State.Moving:
 			_handle_movement()
 			pass
-		Move_State.Climbing:
-			_handle_climbing()
-			pass
 	
 	if (database.pause_game):
 		player_body.linear_velocity = Vector3.ZERO
-
-func _input(event: InputEvent) -> void:
-	if (!database.pause_game && move_state != Move_State.Null):
-		if event is InputEventMouseMotion and !database.controller_used:
-			cam_origin.rotation.x -= event.relative.y * sens
-			cam_origin.rotation.y += -event.relative.x * sens
-
-func _handle_controller_cam(delta):
-	controller_vector = Input.get_vector("cam_right","cam_left","cam_up","cam_down")
-	if (controller_vector.length() >= .2):
-		cam_origin.rotation.x -= controller_vector.y  * delta
-		cam_origin.rotation.y += controller_vector.x  * delta
-
-func _handle_stamina():
-		#stamina
-	database.stamina_bar.value = stamina
-	if (!stamina_fully_depleated):
-		if (grounded && !climbing && !sprinting && stamina < max_stamina):
-			if(recovery_buffer >= 0):
-				recovery_buffer -= get_process_delta_time()
-			else:
-				stamina += stamina_recovery * get_process_delta_time()
-				if(stamina >= max_stamina):
-					stamina = max_stamina
-		else:
-			recovery_buffer = stamina_recovery_buffer_max
-	else:
-		if(player_body.linear_velocity == Vector3.ZERO):
-			if(recovery_buffer >= 0):
-				recovery_buffer -= get_process_delta_time()
-			else:
-				stamina += stamina_recovery * get_process_delta_time()
-				if(stamina >= max_stamina):
-					stamina = max_stamina
-	stamina_fully_recovered = stamina >= max_stamina
-	if (stamina <= 0):
-		stamina_fully_depleated = true
-	if (stamina_fully_recovered):
-		stamina_fully_depleated = false
 
 func _handle_autosave():
 	if(autosave_timer >= 0):
@@ -235,15 +117,6 @@ func _handle_adding_inventory(): ##handles adding an item to your inventory
 				pass
 
 func _handle_movement():
-		# Handle Sprint.
-	if(!zoomed):
-		if (Input.is_action_pressed("sprint") && stamina > 0 && !stamina_fully_depleated):
-			speed = SPRINT_SPEED
-			stamina -= run_effort * get_process_delta_time()
-			sprinting = true
-		else:
-			sprinting = false
-			speed = WALK_SPEED
 	# Get the input direction and handle the movement/deceleration.
 	if direction:
 		player_body.linear_velocity.x = direction.x *  speed
@@ -257,68 +130,12 @@ func _handle_movement():
 		_set_move_state(Move_State.Idle)
 
 func _body_rotation():
-	if(move_state != Move_State.Idle || gun.visible):
+	if(move_state != Move_State.Idle):
 		#top rotation
-		#player_body.rotation.y = cam_origin.rotation.y
-		player_body.rotation.y = lerp_angle(player_body.rotation.y,cam_origin.rotation.y, 15 * get_process_delta_time())
-		#lower rotation
-		if (!climbing):
-			lower_body_visual.rotation.y = lerp_angle(lower_body_visual.rotation.y,player_body.rotation.y, rotation_buffer * get_process_delta_time())
+		pass
 
-func _handle_climbing():
-	# Get the input direction and handle the movement/deceleration.
-	if (Input.is_action_pressed("sprint") && stamina > 0):
-		#will likely need to change later
-		climbing = true
-		player_body.gravity_scale = 0
-		if climb_dir:
-			stamina -= climb_effort * get_process_delta_time()
-			player_body.linear_velocity.y = -climb_dir.y * climb_speed 
-			#messy way of doing relative movement bc the normal way wasn't working
-			if(absf(climb_dir.x) > .95):
-				player_body.linear_velocity.x = direction.x *  climb_speed
-			if(absf(climb_dir.z) > .95):
-				player_body.linear_velocity.z = direction.z * climb_speed
-		else:
-			player_body.linear_velocity.y = 0
-			player_body.linear_velocity.x = 0
-			player_body.linear_velocity.z = 0
-			stamina -= climb_effort/2 * get_process_delta_time() 
-		#pull self to top of structure if at the top
-	if(!Input.is_action_pressed("sprint") || stamina <= 0 || !climb_checker.is_colliding()):
-		#jump AWAY from wall when jump is released
-		_set_move_state(Move_State.Idle)
-
-
-func _handle_zoom(delta):
-	if(Input.is_action_pressed("zoom")):
-		if (inventory_dictionary.Permanent.Gun.Active && interact_state != Interact_State.Threaten):
-			zoom_cam.priority = 10
-			default_cam.priority = 0
-			_set_interact_state(Interact_State.Threaten)
-		cam.fov = lerpf(cam.fov, ZOOM_FOV, delta * 2)
-		if(!zoomed):
-			zoomed = true
-	else:
-		if (interact_state == Interact_State.Threaten):
-			zoom_cam.priority = 0
-			default_cam.priority = 10
-			_set_interact_state(Interact_State.Null)
-		cam.fov = lerpf(cam.fov, DEFAULT_FOV, delta * 2)
-		if(zoomed):
-			zoomed = false
-
-func _handle_follow_cam(delta): #needs some tweaking later, maybe figure out some ease?
-	##zoom cam
-	zoomed_origin.global_rotation = cam_origin.global_rotation
-	##x
-	if (absf(player_body.global_position.x - cam_origin.global_position.x) > follow_buffer.x):
-		cam_origin.global_position.x = lerpf(cam_origin.global_position.x, player_body.global_position.x, cam_follow_weight/2 * delta)
-	##y
-	cam_origin.global_position.y = lerpf(cam_origin.global_position.y, center_point.global_position.y, cam_follow_weight * delta)
-	##z
-	cam_origin.global_position.z = lerpf(cam_origin.global_position.z, center_point.global_position.z, cam_follow_weight * delta)
-	cam_origin.position.normalized()
+func _point_and_click_cam_behavior():
+	pass
 
 func _set_move_state(next_move_state:int):
 	var prev_move_state := move_state
@@ -329,26 +146,10 @@ func _set_move_state(next_move_state:int):
 		Move_State.Climbing:
 			climbing = false
 			player_body.gravity_scale = 2
-		Move_State.Mounted:
-			player_body.freeze = false
-			body_collision.disabled = false
-			mount_cam.priority = 0
-			default_cam.priority = 10
-			cam.h_offset = default_H_offset
-			sens = default_sens
-			print("PLAYER DISMOUNTED")
 	#check upcoming state
 	match(next_move_state):
 		Move_State.Moving:
 			pass
-		Move_State.Mounted:
-			body_collision.disabled = true
-			player_body.freeze = true
-			mount_cam.priority = 10
-			default_cam.priority = 0
-			cam.h_offset = 0
-			sens = mount_sens
-			print("PLAYER MOUNTED")
 
 
 func _set_interact_state(next_interact_state:int):

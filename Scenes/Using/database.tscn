@@ -3,9 +3,11 @@
 [ext_resource type="Script" uid="uid://k625y2ohn1lr" path="res://Scripts/database.gd" id="1_crblt"]
 [ext_resource type="Texture2D" uid="uid://qjjxhflxkyob" path="res://Imports/Textures/Temp/Map Temp.jpg" id="2_w614c"]
 [ext_resource type="Script" uid="uid://d7x4q8vaoym" path="res://Scripts/inventory_ui.gd" id="3_scmpp"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_e661w"]
 
-[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("inventory_ui", "menu_ui", "save_game", "inventory", "options", "exit_game", "stamina_bar") groups=["Database"]]
+[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("cam", "inventory_ui", "menu_ui", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
 script = ExtResource("1_crblt")
+cam = NodePath("SubViewportContainer/SubViewport/Camera")
 removable_items = {
 "Item Test": "res://Scenes/Entities/inventory_item.tscn"
 }
@@ -15,7 +17,6 @@ save_game = NodePath("UI/Menu UI/HBoxContainer/Save Game")
 inventory = NodePath("UI/Menu UI/HBoxContainer/Inventory")
 options = NodePath("UI/Menu UI/HBoxContainer/Options")
 exit_game = NodePath("UI/Menu UI/HBoxContainer/Exit Game")
-stamina_bar = NodePath("UI/Temp Stamina")
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1446402854]
 
@@ -135,13 +136,26 @@ texture_normal = ExtResource("2_w614c")
 layout_mode = 2
 texture_normal = ExtResource("2_w614c")
 
-[node name="Temp Stamina" type="ProgressBar" parent="UI" unique_id=917498540]
-anchors_preset = -1
-anchor_right = 0.37100002
-anchor_bottom = 0.042000003
-offset_left = 35.0
-offset_top = 581.0
-offset_right = 34.60797
-offset_bottom = 580.784
-max_value = 15.0
-step = 0.1
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1148701466]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=12514252]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Camera" type="Camera3D" parent="SubViewportContainer/SubViewport" unique_id=1086632360]
+transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
+h_offset = 1.5
+current = true
+fov = 84.117065
+
+[node name="PhantomCameraHost" type="Node" parent="SubViewportContainer/SubViewport/Camera" unique_id=2017090500]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("4_e661w")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"

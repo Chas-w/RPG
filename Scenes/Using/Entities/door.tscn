@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://baoaywlbjf36"]
 
 [ext_resource type="Script" uid="uid://db7kehen4nqfh" path="res://Scripts/door.gd" id="1_nuxhq"]
-[ext_resource type="PackedScene" uid="uid://cns0euej5vo6a" path="res://Scenes/Entities/lock_picking.tscn" id="2_uycsl"]
+[ext_resource type="PackedScene" uid="uid://cns0euej5vo6a" path="res://Scenes/Using/Entities/lock_picking.tscn" id="2_uycsl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_oqlhh"]
 size = Vector3(1, 1, 20)
