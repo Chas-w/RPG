@@ -37,7 +37,7 @@ var autosave_timer
 @export_category("States")
 enum Move_State{Idle,Moving,Climbing, Null}
 @export var move_state : Move_State = Move_State.Idle
-enum Interact_State{Talk,Threaten, Inspect, Attack, In_Menu, In_Other_View, Null}
+enum Interact_State{Talk, Inspect, In_Menu, In_Other_View, Null}
 @export var interact_state : Interact_State = Interact_State.Null
 
 func _ready():
@@ -160,12 +160,10 @@ func _set_interact_state(next_interact_state:int):
 		
 	#check last state
 	match(prev_interact_state):
-		Interact_State.Threaten:
-			pass
+		pass
 	#check upcoming state
 	match(next_interact_state):
-		Interact_State.Threaten:
-			pass
+		pass
 
 func _update_JSON_data():
 	status_dictionary.Health = health
