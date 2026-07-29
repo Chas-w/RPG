@@ -5,9 +5,10 @@
 [ext_resource type="Script" uid="uid://d7x4q8vaoym" path="res://Scripts/inventory_ui.gd" id="3_scmpp"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_e661w"]
 
-[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("cam", "inventory_ui", "menu_ui", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
+[node name="Database" type="Node" unique_id=413423122 node_paths=PackedStringArray("cam", "cam_brain", "inventory_ui", "menu_ui", "save_game", "inventory", "options", "exit_game") groups=["Database"]]
 script = ExtResource("1_crblt")
 cam = NodePath("SubViewportContainer/SubViewport/Camera")
+cam_brain = NodePath("SubViewportContainer/SubViewport/Camera/PhantomCameraHost")
 removable_items = {
 "Item Test": "res://Scenes/Entities/inventory_item.tscn"
 }
@@ -150,6 +151,7 @@ render_target_update_mode = 4
 
 [node name="Camera" type="Camera3D" parent="SubViewportContainer/SubViewport" unique_id=1086632360]
 transform = Transform3D(1, 0, 0, 0, 0.9993908, 0.03489949, 0, -0.03489949, 0.9993908, -1.46, -0.42702514, 2.0897267)
+top_level = true
 h_offset = 1.5
 current = true
 fov = 84.117065

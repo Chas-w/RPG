@@ -33,6 +33,7 @@ func _process(delta):
 				self.visible = true
 	
 	if(picking):
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		if(lock_picking.solved):
 			barrier.disabled = true
 			self.visible = false
@@ -40,7 +41,8 @@ func _process(delta):
 			player._set_move_state(player.Move_State.Idle)
 			lock_picking.queue_free() #if the door isn't locked get rid of this node
 			picking = false
-			
+			Input.mouse_mode = Input.MOUSE_MODE_CONFINED
+
 func _on_open_trigger_body_entered(body):
 	if(body.is_in_group("Player")):
 		player = body.get_parent()

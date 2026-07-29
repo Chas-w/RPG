@@ -1,10 +1,11 @@
 [gd_scene format=4 uid="uid://det1ev86alinb"]
 
-[ext_resource type="PackedScene" uid="uid://brxh4j66crg80" path="res://Scenes/Using/Entities/npc.tscn" id="2_go701"]
 [ext_resource type="PackedScene" uid="uid://dfban5mvvjrv7" path="res://Imports/Mesh/Temp/Mountains.fbx" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://cs5uw5ng78niv" path="res://Scenes/Using/Entities/Player Controller.tscn" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://d273rn50d72ke" path="res://Scenes/Using/Entities/inventory_item.tscn" id="4_fo5ed"]
 [ext_resource type="PackedScene" uid="uid://baoaywlbjf36" path="res://Scenes/Using/Entities/door.tscn" id="5_fo5ed"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="7_6jddi"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="8_h0hs0"]
 [ext_resource type="Texture2D" uid="uid://brws4pti5b0ob" path="res://Imports/Textures/Temp/temp pattern.jpg" id="8_k7acu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5a7ea"]
@@ -15659,6 +15660,9 @@ _data = {
 &"TailTip|USE HORSE": SubResource("Animation_q00n0")
 }
 
+[sub_resource type="Resource" id="Resource_0x5ul"]
+script = ExtResource("8_h0hs0")
+
 [node name="World" type="Node3D" unique_id=1250724674]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=527794572]
@@ -15675,9 +15679,6 @@ shape = SubResource("BoxShape3D_yp4wr")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=1192151989]
 mesh = SubResource("BoxMesh_a02cp")
 surface_material_override/0 = SubResource("StandardMaterial3D_go701")
-
-[node name="NPC" parent="." unique_id=440338480 instance=ExtResource("2_go701")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0775926, -6.5464115)
 
 [node name="Mountains" parent="." unique_id=834613415 instance=ExtResource("3_5a7ea")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.128204, -24.777134, -28.40332)
@@ -16164,6 +16165,12 @@ autoplay = &"Align|Take 001"
 
 [node name="Player Controller" parent="." unique_id=1667299940 instance=ExtResource("4_8j60k")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.6136742, 0)
+
+[node name="PhantomCamera3D" type="Node3D" parent="." unique_id=277054255]
+transform = Transform3D(0.6975903, -0.2044769, 0.68670005, 0, 0.9584132, 0.2853842, -0.7164969, -0.19908126, 0.66857976, 0, 9.45449, 27.479145)
+script = ExtResource("7_6jddi")
+tween_resource = SubResource("Resource_0x5ul")
+metadata/_custom_type_script = "uid://csjccrhj5wnx7"
 
 [editable path="Mountains"]
 [editable path="Door"]

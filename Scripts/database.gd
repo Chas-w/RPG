@@ -4,6 +4,8 @@ extends Node
 var zoomed : bool
 var DEFAULT_FOV :=  75.0
 var ZOOMED_FOV := 50.0
+@export var cam_brain : PhantomCameraHost
+var current_cam : PhantomCamera3D
 
 var player_status_path = "res://DATA/STATUS.json"
 var player_inventory_path = "res://DATA/INVENTORY.json"
@@ -32,7 +34,7 @@ var controller_used : bool
 func _ready():
 	menu_ui.visible = false
 	inventory_ui.visible = false
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 
 func _input(event: InputEvent) -> void:
 	if(Input.is_action_just_pressed("pause")):
@@ -44,15 +46,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta):
+	current_cam = cam_brain.get_active_pcam()
 	if(pause_game && !menu_ui.visible && !open_menu):
 		menu_ui.visible = true
 		open_menu = true
-		Input.mouse_mode = Input.MOUSE_MODE_CONFINED
 	if(!pause_game && menu_ui.visible || !pause_game && inventory_ui.visible):
 		menu_ui.visible = false
 		open_menu = false
 		inventory_ui.visible = false
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if(save_game.button_pressed):
 		saving = true
 	if (exit_game.button_pressed):

@@ -40,7 +40,6 @@ func _ready():
 	for game_obj in get_tree().get_nodes_in_group("Database"): #assign database
 		database = game_obj
 	##setup
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	#set a random rotation for the solution
 	var new_rot = (randf_range(deg_to_rad(pick_limits.x), deg_to_rad(pick_limits.y)))
 	limit.rotation = new_rot

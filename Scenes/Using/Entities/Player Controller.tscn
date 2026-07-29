@@ -8,10 +8,10 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4bjip"]
 albedo_texture = ExtResource("5_t5o4e")
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dysn3"]
 albedo_texture = ExtResource("5_t5o4e")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8j60k"]
 
 [node name="Player Controller" type="Node3D" unique_id=1667299940 node_paths=PackedStringArray("player_body", "lower_body_visual", "ground_cast", "climb_checker", "body_collision") groups=["Player Controller"]]
 script = ExtResource("1_t5o4e")
@@ -26,6 +26,11 @@ body_collision = NodePath("Player Body/CollisionShape3D")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2933636, -0.61135334, 0)
 mesh = SubResource("CapsuleMesh_cwweq")
 surface_material_override/0 = SubResource("StandardMaterial3D_4bjip")
+
+[node name="UpperBody" type="MeshInstance3D" parent="Body" unique_id=1859962029]
+transform = Transform3D(1.5119047, 0, 0, 0, 0.5338587, 0, 0, 0, 1.2821106, 0, 0.4867847, 0)
+mesh = SubResource("CapsuleMesh_cwweq")
+surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 
 [node name="Ground Cast" type="RayCast3D" parent="Body" unique_id=217260227]
 transform = Transform3D(1, 0, 0, 0, 0.2, 0, 0, 0, 1, 0, -0.954, 0)
@@ -44,11 +49,6 @@ lock_rotation = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player Body" unique_id=252550095]
 shape = SubResource("CapsuleShape3D_8j60k")
-
-[node name="UpperBody" type="MeshInstance3D" parent="Player Body" unique_id=1859962029]
-transform = Transform3D(1.5119047, 0, 0, 0, 0.5338587, 0, 0, 0, 1.2821106, 0, 0.4867847, 0)
-mesh = SubResource("CapsuleMesh_cwweq")
-surface_material_override/0 = SubResource("StandardMaterial3D_dysn3")
 
 [node name="Center Point" type="Marker3D" parent="Player Body" unique_id=1897500884]
 transform = Transform3D(1, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000002, 0, 0.9685745, 0)

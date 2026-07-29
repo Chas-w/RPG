@@ -6,6 +6,7 @@ extends Node3D
 @export var climb_checker : RayCast3D
 @export var max_stamina : float
 @export var climb_speed = 3
+var rot_offset : Vector2
 var grounded
 var climbing : bool 
 var speed
@@ -21,7 +22,6 @@ var default_sens =  0.0004
 
 @export_category("Collisions")
 @export var body_collision : CollisionShape3D
-
 
 @export_category("Player Data Info")
 @export var health : float
@@ -71,7 +71,6 @@ func _process(delta):
 	if (!database.pause_game && move_state != Move_State.Null):
 		input_dir = Input.get_vector("left", "right", "up", "down")
 		direction = (player_body.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-		climb_dir = (player_body.transform.basis * Vector3(input_dir.x, input_dir.y, 0)).normalized()
 		_handle_adding_inventory()
 		if(direction && move_state != Move_State.Moving && !climbing && grounded):
 			_set_move_state(Move_State.Moving)
@@ -130,10 +129,14 @@ func _handle_movement():
 		_set_move_state(Move_State.Idle)
 
 func _body_rotation():
-	if(move_state != Move_State.Idle):
-		#top rotation
-		pass
-
+	pass
+	#if(move_state != Move_State.Idle):
+		#if(input_dir.x):
+			#print("x")
+			#
+		#if(input_dir.y):
+			#print("y")
+			#
 func _point_and_click_cam_behavior():
 	pass
 
@@ -150,7 +153,6 @@ func _set_move_state(next_move_state:int):
 	match(next_move_state):
 		Move_State.Moving:
 			pass
-
 
 func _set_interact_state(next_interact_state:int):
 	var prev_interact_state := interact_state
